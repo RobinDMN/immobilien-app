@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  immobilien-app:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/immobilien-app:latest
+    container_name: immobilien-app
+    restart: unless-stopped
+    
+    ports:
+      - "127.0.0.1:3000:80"
+    
+    environment:
+      - NODE_ENV=production
+      - VITE_USE_REMOTE_OVM_STORAGE=${USE_REMOTE_STORAGE:-false}
+      - VITE_API_BASE_URL=${API_BASE_URL:-}
+    
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "app=immobilien"
+      - "environment=production"
+    
+    networks:
+      - immobilien-network
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  immobilien-network:
+    driver: bridge
+
+# Optional: Watchtower für automatische Updates
+# Uncomment if you want auto-updates on image changes
+#  watchtower:
+#    image: containrrr/watchtower
+#    container_name: watchtower
+#    restart: unless-stopped
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    environment:
+#      - WATCHTOWER_CLEANUP=true
+#      - WATCHTOWER_POLL_INTERVAL=300
+#      - WATCHTOWER_LABEL_ENABLE=true
+#    networks:
+#      - immobilien-network
