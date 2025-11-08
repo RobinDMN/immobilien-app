@@ -355,3 +355,5 @@ Proprietär - Alle Rechte vorbehalten.
 **Node Version:** 20+  
 **React Version:** 18.3.1  
 **Vite Version:** 5.4.21
+#   D e p l o y m e n t   r e a d y  
+ 
