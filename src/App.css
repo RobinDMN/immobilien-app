@@ -263,3 +263,124 @@ body {
 .object-detail::-webkit-scrollbar-thumb:hover {
   background: #999;
 }
+
+/* ============================================================================
+   MOBILE RESPONSIVE
+   ============================================================================ */
+@media (max-width: 768px) {
+  /* Header kompakter */
+  .app-header {
+    padding: 10px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .user-info {
+    font-size: 0.85rem;
+    gap: 8px;
+  }
+
+  .btn-user-switch {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    min-height: 44px; /* iOS Touch Target */
+  }
+
+  /* Sidebar wird zum Drawer */
+  .app-content {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    max-height: 40vh;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .sidebar h2 {
+    padding: 14px 16px;
+    font-size: 1.1rem;
+  }
+
+  /* Objektliste touch-friendly */
+  .objekt-liste li {
+    padding: 16px;
+    min-height: 64px; /* Größere Touch Targets */
+  }
+
+  .objekt-name {
+    font-size: 1rem;
+  }
+
+  .objekt-adresse {
+    font-size: 0.85rem;
+  }
+
+  /* Detail View */
+  .object-detail {
+    padding: 20px 16px;
+  }
+
+  .detail-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .adresse {
+    font-size: 0.9rem;
+  }
+
+  /* Grid auf eine Spalte */
+  .objekt-info-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .info-item {
+    padding: 12px;
+    min-height: 48px;
+  }
+
+  /* Checklist touch-friendly */
+  .checklist-item label {
+    font-size: 0.95rem;
+    padding: 8px 0;
+    min-height: 48px;
+  }
+
+  .checklist-item input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    margin-right: 14px;
+  }
+}
+
+/* Extra small devices (phones in portrait) */
+@media (max-width: 480px) {
+  .app-header {
+    padding: 8px 12px;
+  }
+
+  .user-info {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .btn-user-switch {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .sidebar {
+    max-height: 35vh;
+  }
+
+  .object-detail {
+    padding: 16px 12px;
+  }
+
+  .detail-header h2 {
+    font-size: 1.2rem;
+  }
+}
