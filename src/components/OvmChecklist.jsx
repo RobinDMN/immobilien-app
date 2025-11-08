@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { groupOvmItemsByBereich, validateWohnflaeche } from '../lib/ovm.js';
-import { getStorageProvider, createAnswerData } from '../lib/storage/ovmStorage.js';
+import { getStorageProvider, createAnswerData, mergeAnswers } from '../lib/storage/ovmStorage.js';
 import { useDebouncedSave } from '../hooks/useDebouncedSave.js';
 import { useUser } from '../contexts/UserContext.jsx';
 import './OvmChecklist.css';

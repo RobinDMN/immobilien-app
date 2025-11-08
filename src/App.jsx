@@ -7,6 +7,7 @@ import { UserProvider, useUser } from './contexts/UserContext.jsx';
 import LoginModal from './components/LoginModal.jsx';
 import ObjectList from './components/ObjectList.jsx';
 import ObjectDetail from './components/ObjectDetail.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 
 // Mock-Daten werden nicht mehr direkt hier verwendet, sondern in loadMagdeburgObjects gekapselt.
 
@@ -96,22 +97,24 @@ function AppContent() {
         </div>
       </header>
       <main className="app-content">
-        <Routes>
-          <Route 
-            path="/" 
-            element={<ObjectList objekte={objekte} />} 
-          />
-          <Route 
-            path="/objekte/:id" 
-            element={
-              <ObjectDetail 
-                objekte={objekte} 
-                ovmData={ovmData}
-                onUpdateOvm={handleOvmUpdate}
-              />
-            } 
-          />
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route 
+              path="/" 
+              element={<ObjectList objekte={objekte} />} 
+            />
+            <Route 
+              path="/objekte/:id" 
+              element={
+                <ObjectDetail 
+                  objekte={objekte} 
+                  ovmData={ovmData}
+                  onUpdateOvm={handleOvmUpdate}
+                />
+              } 
+            />
+          </Routes>
+        </ErrorBoundary>
       </main>
     </div>
   );
