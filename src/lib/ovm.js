@@ -39,10 +39,10 @@ function normalizeAddress(address, plz) {
 /**
  * Formatiert Geldbeträge ins deutsche Format (€ X.XXX,XX)
  * @param {string|number} value - Wert als String oder Number
- * @returns {string} Formatierter Betrag mit € Symbol
+ * @returns {string|null} Formatierter Betrag mit € Symbol oder null
  */
 function formatCurrency(value) {
-  if (!value) return null;
+  if (value == null || value === '') return null;
   const num = typeof value === 'string' ? parseFloat(value) : value;
   if (isNaN(num)) return null;
   return '€ ' + num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -51,10 +51,10 @@ function formatCurrency(value) {
 /**
  * Formatiert Miete pro m² (€/m²)
  * @param {string|number} value - Wert als String oder Number
- * @returns {string} Formatierter Wert mit €/m² Suffix
+ * @returns {string|null} Formatierter Wert mit €/m² Suffix oder null
  */
 function formatRentPerSqm(value) {
-  if (!value) return null;
+  if (value == null || value === '') return null;
   const num = typeof value === 'string' ? parseFloat(value) : value;
   if (isNaN(num)) return null;
   return num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €/m²';
