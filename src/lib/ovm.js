@@ -182,9 +182,13 @@ export async function loadMagdeburgObjects() {
           });
           
           // KORREKTES Parsing (nur einmal, hier im Loader):
-          // Flächenwerte: Integer / 10 (z.B. 17043 → 1704,3)
-          const qm_flaeche_num = info.qm_flaeche != null ? info.qm_flaeche / 10 : null;
-          const leerstand_qm_num = info.leerstand_qm != null ? info.leerstand_qm / 10 : null;
+          // Flächenwerte: Inkonsistente Daten - intelligente Erkennung
+          // Wenn Wert > 50000, dann ÷100, sonst ÷10
+          const qm_flaeche_num = info.qm_flaeche != null 
+            ? (info.qm_flaeche > 50000 ? info.qm_flaeche / 100 : info.qm_flaeche / 10)
+            : null;
+          // Leerstand: Integer / 100 (z.B. 41334 → 413,34)
+          const leerstand_qm_num = info.leerstand_qm != null ? info.leerstand_qm / 100 : null;
           
           // Einheiten: Integer / 10 (z.B. 340 → 34)
           const wohneinheiten_int = info.wohneinheiten != null ? Math.round(info.wohneinheiten / 10) : null;
@@ -195,10 +199,10 @@ export async function loadMagdeburgObjects() {
           const baujahr_int = info.baujahr != null ? Math.round(info.baujahr / 10) : null;
           const baujahr_waermeerzeuger_int = info.baujahr_waermeerzeuger != null ? Math.round(info.baujahr_waermeerzeuger / 10) : null;
           
-          // Währung/Miete: String mit US-Dezimalpunkt → parsen (z.B. "9514.41" → 9514.41)
-          // KEINE Division! Werte sind bereits korrekt, nur Punkt→Komma
-          const grundmiete_num = parseDeNumber(info.grundmiete);
-          const durchschnitt_miete_qm_num = parseDeNumber(info.durchschnitt_miete_qm);
+          // Währung/Miete: Sind bereits Numbers im JSON, direkt übernehmen
+          // KEINE Division, KEIN Parsing! Werte sind bereits korrekt.
+          const grundmiete_num = typeof info.grundmiete === 'number' ? info.grundmiete : null;
+          const durchschnitt_miete_qm_num = typeof info.durchschnitt_miete_qm === 'number' ? info.durchschnitt_miete_qm : null;
           
           console.log('[OVM] Parsed für', obj.name, ':', {
             qm_flaeche_num,

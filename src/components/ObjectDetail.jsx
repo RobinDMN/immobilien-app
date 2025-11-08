@@ -149,22 +149,26 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
             </div>
           )}
           
-          {/* 6. grundmiete - formatiert als € X.XXX,XX */}
-          {object.grundmiete_num != null && (
+          {/* 6. grundmiete - aus objekt_infos_geordnet.json (neu) ODER aus objekte_magdeburg.json (alt) */}
+          {(object.grundmiete_num != null || object.grundmiete) && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Grundmiete:</span>
               <span className="info-value" style={{ marginLeft: '0.5rem' }}>
-                € {object.grundmiete_num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {object.grundmiete_num != null 
+                  ? `€ ${object.grundmiete_num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                  : object.grundmiete}
               </span>
             </div>
           )}
           
-          {/* 7. durchschnitt_miete_qm - formatiert als X,XX €/m² */}
-          {object.durchschnitt_miete_qm_num != null && (
+          {/* 7. durchschnittsmiete - aus objekt_infos_geordnet.json (neu) ODER aus objekte_magdeburg.json (alt) */}
+          {(object.durchschnitt_miete_qm_num != null || object.durchschnittsmiete) && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Ø-Miete/m²:</span>
               <span className="info-value" style={{ marginLeft: '0.5rem' }}>
-                {object.durchschnitt_miete_qm_num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €/m²
+                {object.durchschnitt_miete_qm_num != null 
+                  ? `${object.durchschnitt_miete_qm_num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €/m²`
+                  : `${object.durchschnittsmiete}/m²`}
               </span>
             </div>
           )}
