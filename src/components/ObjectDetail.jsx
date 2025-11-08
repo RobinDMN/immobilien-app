@@ -108,7 +108,7 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
           marginTop: '1.5rem',
           marginBottom: '2rem'
         }}>
-          {/* 1. Grundmiete */}
+          {/* 1. Grundmiete (aus Zusatzdaten) */}
           {object.grundmiete && (
             <div className="info-item">
               <span className="info-label">Grundmiete:</span>
@@ -116,7 +116,7 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
             </div>
           )}
           
-          {/* 2. Ø-Miete pro m² (durchschnittlich) */}
+          {/* 2. Ø-Miete/m² */}
           {object.durchschnitt_miete_qm && (
             <div className="info-item">
               <span className="info-label">Ø-Miete/m²:</span>
@@ -124,7 +124,7 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
             </div>
           )}
           
-          {/* 3. Energieeffizienzklasse */}
+          {/* 3. Energieklasse */}
           {object.energieklasse && (
             <div className="info-item">
               <span className="info-label">Energieklasse:</span>
@@ -136,7 +136,7 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
           {object.vermietbare_flaeche_qm && (
             <div className="info-item">
               <span className="info-label">Vermietbare Fläche:</span>
-              <span className="info-value">{object.vermietbare_flaeche_qm} m²</span>
+              <span className="info-value">{object.vermietbare_flaeche_qm.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²</span>
             </div>
           )}
           
@@ -144,7 +144,7 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
           {object.wohneinheiten !== undefined && object.wohneinheiten !== null && (
             <div className="info-item">
               <span className="info-label">Wohneinheiten:</span>
-              <span className="info-value">{object.wohneinheiten}</span>
+              <span className="info-value">{Math.round(object.wohneinheiten)}</span>
             </div>
           )}
           
@@ -152,7 +152,7 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
           {object.gewerbeeinheiten !== undefined && object.gewerbeeinheiten !== null && (
             <div className="info-item">
               <span className="info-label">Gewerbeeinheiten:</span>
-              <span className="info-value">{object.gewerbeeinheiten}</span>
+              <span className="info-value">{Math.round(object.gewerbeeinheiten)}</span>
             </div>
           )}
           
@@ -160,7 +160,7 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
           {object.stellplaetze !== undefined && object.stellplaetze !== null && (
             <div className="info-item">
               <span className="info-label">Stellplätze:</span>
-              <span className="info-value">{object.stellplaetze}</span>
+              <span className="info-value">{Math.round(object.stellplaetze)}</span>
             </div>
           )}
           
@@ -172,11 +172,19 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
             </div>
           )}
           
-          {/* Baujahr (optional) */}
+          {/* 9. Baujahr */}
           {object.baujahr && (
             <div className="info-item">
               <span className="info-label">Baujahr:</span>
               <span className="info-value">{object.baujahr}</span>
+            </div>
+          )}
+          
+          {/* 10. Denkmalschutz (Ja/Nein) */}
+          {object.denkmalschutz && (
+            <div className="info-item">
+              <span className="info-label">Denkmalschutz:</span>
+              <span className="info-value">{object.denkmalschutz}</span>
             </div>
           )}
         </div>
