@@ -25,6 +25,40 @@ function normalizeStrasse(strasse) {
 }
 
 /**
+ * Parst deutsche Zahlen-Strings (z.B. "1.704,30" oder "7,02") zu Number
+ * @param {string|number} value - Wert als String oder Number
+ * @returns {number|null} Geparste Zahl oder null
+ */
+function parseDeNumber(value) {
+  if (value == null || value === '') return null;
+  if (typeof value === 'number') return value;
+  
+  const str = String(value).trim();
+  if (str === '') return null;
+  
+  // Entferne Tausender-Punkte, ersetze Dezimal-Komma durch Punkt
+  const normalized = str.replace(/\./g, '').replace(',', '.');
+  const num = Number(normalized);
+  
+  return isNaN(num) ? null : num;
+}
+
+/**
+ * Formatiert Zahlen im deutschen Format
+ * @param {number} value - Zahl
+ * @param {object} options - Formatierungs-Optionen
+ * @param {number} options.decimals - Anzahl Dezimalstellen
+ * @returns {string|null} Formatierter String oder null
+ */
+function formatDeNumber(value, { decimals = 2 } = {}) {
+  if (value == null || isNaN(value)) return null;
+  return new Intl.NumberFormat('de-DE', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  }).format(value);
+}
+
+/**
  * Formatiert Geldbeträge ins deutsche Format (€ X.XXX,XX)
  * @param {string|number} value - Wert als String oder Number
  * @returns {string|null} Formatierter Betrag mit € Symbol oder null
@@ -132,23 +166,45 @@ export async function loadMagdeburgObjects() {
             : deepCopyOvmChecklist()
         };
         
-        // Merge Objekt-Infos falls vorhanden (1:1, keine Transformationen)
+        // Merge Objekt-Infos falls vorhanden
+        // WICHTIG: JSON-Werte sind Faktor 10 zu hoch → durch 10 teilen!
         if (info) {
-          return {
-            ...baseObject,
-            // Alle Felder 1:1 aus JSON übernehmen
+          // Rohdaten-Diagnose in Console ausgeben
+          console.log('[OVM] Raw JSON für', obj.name, ':', {
             qm_flaeche: info.qm_flaeche,
             leerstand_qm: info.leerstand_qm,
+            baujahr: info.baujahr,
+            baujahr_waermeerzeuger: info.baujahr_waermeerzeuger,
+            grundmiete: info.grundmiete,
+            durchschnitt_miete_qm: info.durchschnitt_miete_qm
+          });
+          
+          // Parse & korrigiere Werte
+          const qm_flaeche_num = info.qm_flaeche != null ? info.qm_flaeche / 10 : null;
+          const leerstand_qm_num = info.leerstand_qm != null ? info.leerstand_qm / 10 : null;
+          const baujahr_num = info.baujahr != null ? Math.round(info.baujahr / 10) : null;
+          const baujahr_waermeerzeuger_num = info.baujahr_waermeerzeuger != null ? Math.round(info.baujahr_waermeerzeuger / 10) : null;
+          
+          // Grundmiete & Ø-Miete als String-Zahlen parsen
+          const grundmiete_num = parseDeNumber(info.grundmiete);
+          const durchschnitt_miete_qm_num = parseDeNumber(info.durchschnitt_miete_qm);
+          
+          return {
+            ...baseObject,
+            // Normierte Zahlen-Werte (bereits korrigiert)
+            qm_flaeche_num,
+            leerstand_qm_num,
             wohneinheiten: info.wohneinheiten,
             gewerbeeinheiten: info.gewerbeeinheiten,
             stellplaetze: info.stellplaetze,
-            grundmiete: info.grundmiete,
-            durchschnitt_miete_qm: info.durchschnitt_miete_qm,
-            baujahr: info.baujahr,
+            grundmiete_num,
+            durchschnitt_miete_qm_num,
+            baujahr_num,
+            baujahr_waermeerzeuger_num,
+            // Text-Felder unverändert
             denkmalschutz: info.denkmalschutz,
             energieeffizienz: info.energieeffizienz,
             energietraeger: info.energietraeger,
-            baujahr_waermeerzeuger: info.baujahr_waermeerzeuger,
             energieeffizienzklasse: info.energieeffizienzklasse,
             bemerkung: info.bemerkung
           };

@@ -100,24 +100,28 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
       <div className="object-detail-content">
         <p>{object.adresse}</p>
         
-        {/* Objektinformationen - 1:1 aus objekt_infos_geordnet.json */}
+        {/* Objektinformationen - korrekt formatiert mit DE-Zahlen */}
         <div className="objekt-info-list" style={{ 
           marginTop: '1.5rem',
           marginBottom: '2rem'
         }}>
-          {/* 1. qm_flaeche */}
-          {object.qm_flaeche != null && (
+          {/* 1. qm_flaeche - 2 Dezimalstellen */}
+          {object.qm_flaeche_num != null && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Fläche (m²):</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.qm_flaeche}</span>
+              <span className="info-value" style={{ marginLeft: '0.5rem' }}>
+                {object.qm_flaeche_num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²
+              </span>
             </div>
           )}
           
-          {/* 2. leerstand_qm */}
-          {object.leerstand_qm != null && (
+          {/* 2. leerstand_qm - 2 Dezimalstellen */}
+          {object.leerstand_qm_num != null && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Leerstand (m²):</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.leerstand_qm}</span>
+              <span className="info-value" style={{ marginLeft: '0.5rem' }}>
+                {object.leerstand_qm_num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²
+              </span>
             </div>
           )}
           
@@ -145,27 +149,31 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
             </div>
           )}
           
-          {/* 6. grundmiete */}
-          {object.grundmiete != null && object.grundmiete !== '' && (
+          {/* 6. grundmiete - formatiert als € X.XXX,XX */}
+          {object.grundmiete_num != null && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Grundmiete:</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.grundmiete}</span>
+              <span className="info-value" style={{ marginLeft: '0.5rem' }}>
+                € {object.grundmiete_num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
             </div>
           )}
           
-          {/* 7. durchschnitt_miete_qm */}
-          {object.durchschnitt_miete_qm != null && object.durchschnitt_miete_qm !== '' && (
+          {/* 7. durchschnitt_miete_qm - formatiert als X,XX €/m² */}
+          {object.durchschnitt_miete_qm_num != null && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Ø-Miete/m²:</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.durchschnitt_miete_qm}</span>
+              <span className="info-value" style={{ marginLeft: '0.5rem' }}>
+                {object.durchschnitt_miete_qm_num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €/m²
+              </span>
             </div>
           )}
           
-          {/* 8. baujahr */}
-          {object.baujahr != null && (
+          {/* 8. baujahr - Integer */}
+          {object.baujahr_num != null && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Baujahr:</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.baujahr}</span>
+              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.baujahr_num}</span>
             </div>
           )}
           
@@ -193,15 +201,15 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
             </div>
           )}
           
-          {/* 12. baujahr_waermeerzeuger */}
-          {object.baujahr_waermeerzeuger != null && (
+          {/* 12. baujahr_waermeerzeuger - Integer */}
+          {object.baujahr_waermeerzeuger_num != null && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Baujahr Wärmeerzeuger:</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.baujahr_waermeerzeuger}</span>
+              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.baujahr_waermeerzeuger_num}</span>
             </div>
           )}
           
-          {/* 13. energieeffizienzklasse */}
+          {/* 13. energieeffizienzklasse - Text unverändert */}
           {object.energieeffizienzklasse != null && object.energieeffizienzklasse !== '' && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Energieeffizienzklasse:</span>
@@ -209,7 +217,7 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
             </div>
           )}
           
-          {/* 14. bemerkung */}
+          {/* 14. bemerkung - Text unverändert */}
           {object.bemerkung != null && object.bemerkung !== '' && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Bemerkung:</span>
@@ -218,10 +226,10 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
           )}
           
           {/* Fallback wenn keine Daten vorhanden */}
-          {!object.qm_flaeche && !object.leerstand_qm && !object.wohneinheiten && 
-           !object.gewerbeeinheiten && !object.stellplaetze && !object.grundmiete &&
-           !object.durchschnitt_miete_qm && !object.baujahr && !object.denkmalschutz &&
-           !object.energieeffizienz && !object.energietraeger && !object.baujahr_waermeerzeuger &&
+          {!object.qm_flaeche_num && !object.leerstand_qm_num && !object.wohneinheiten && 
+           !object.gewerbeeinheiten && !object.stellplaetze && !object.grundmiete_num &&
+           !object.durchschnitt_miete_qm_num && !object.baujahr_num && !object.denkmalschutz &&
+           !object.energieeffizienz && !object.energietraeger && !object.baujahr_waermeerzeuger_num &&
            !object.energieeffizienzklasse && !object.bemerkung && (
             <div style={{ padding: '1rem', textAlign: 'center', color: '#95a5a6', fontStyle: 'italic' }}>
               Für dieses Objekt sind keine Detailinformationen verfügbar
