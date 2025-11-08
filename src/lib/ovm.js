@@ -151,17 +151,19 @@ export async function loadMagdeburgObjects() {
         // Merge Zusatzdaten falls vorhanden
         if (zusatz) {
           // Konvertiere Fläche: Werte in JSON sind ohne Komma (z.B. 54111 = 541.11 m²)
-          const flaeche = zusatz.vermietbare_flaeche_qm ? zusatz.vermietbare_flaeche_qm / 100 : null;
+          const flaeche = zusatz.vermietbare_flaeche_qm != null ? zusatz.vermietbare_flaeche_qm / 100 : null;
           
-          // Konvertiere WE/GE: Werte sind * 10 (z.B. 80 = 8 WE)
-          const we = zusatz.wohneinheiten ? zusatz.wohneinheiten / 10 : null;
-          const ge = zusatz.gewerbeeinheiten ? zusatz.gewerbeeinheiten / 10 : null;
+          // Konvertiere WE/GE: Werte sind * 10 (z.B. 340 = 34 WE)
+          const we = zusatz.wohneinheiten != null ? zusatz.wohneinheiten / 10 : null;
+          const ge = zusatz.gewerbeeinheiten != null ? zusatz.gewerbeeinheiten / 10 : null;
           
           // Stellplätze: Werte sind * 10
-          const stellplaetze = zusatz.stellplaetze ? zusatz.stellplaetze / 10 : null;
+          const stellplaetze = zusatz.stellplaetze != null ? zusatz.stellplaetze / 10 : null;
           
           // Baujahr: Werte sind * 10 (z.B. 18980 = 1898)
-          const baujahr = zusatz.baujahr ? Math.round(zusatz.baujahr / 10) : null;
+          const baujahr = zusatz.baujahr != null ? Math.round(zusatz.baujahr / 10) : null;
+          
+          console.log('[OVM] Merge für', obj.name, '→ Fläche:', flaeche, 'WE:', we, 'GE:', ge, 'Stellplätze:', stellplaetze);
           
           return {
             ...baseObject,
