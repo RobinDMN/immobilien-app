@@ -3,26 +3,49 @@
 
 import React, { useState, useEffect } from 'react';
 import { groupOvmItemsByBereich, validateWohnflaeche } from '../lib/ovm.js';
+import { getStorageProvider, createAnswerData } from '../lib/storage/ovmStorage.js';
+import { useDebouncedSave } from '../hooks/useDebouncedSave.js';
 import './OvmChecklist.css';
 
 /**
  * OVM-Checkliste Komponente
- * Rendert eine gruppierte Checkliste mit aufklappbaren Items
+ * Rendert eine gruppierte Checkliste mit Persistenz
  * 
  * @param {Object} props
+ * @param {string} props.objectId - ID des Objekts für Persistenz
  * @param {import('../types/ovm.js').OvmItem[]} props.checklist - Die OVM-Checkliste
  * @param {(updatedChecklist: import('../types/ovm.js').OvmItem[]) => void} props.onChange - Callback bei Änderungen
  */
-export default function OvmChecklist({ checklist, onChange }) {
+export default function OvmChecklist({ objectId, checklist, onChange }) {
   const [items, setItems] = useState(checklist);
   /** @type {[Record<string, string>, Function]} */
   const [validationErrors, setValidationErrors] = useState({});
   /** @type {[Set<string>, Function]} */
   const [expandedGroups, setExpandedGroups] = useState(new Set());
+  
+  // Storage Provider & Debounced Save
+  const storageProvider = getStorageProvider();
+  const { save: debouncedSave, status: saveStatus, error: saveError } = useDebouncedSave(
+    async (updatedItems) => {
+      const answerData = createAnswerData(objectId, updatedItems);
+      await storageProvider.save(objectId, answerData);
+    },
+    500
+  );
 
   useEffect(() => {
     setItems(checklist);
   }, [checklist]);
+
+  /**
+   * Hilfsfunction: Update Items und trigger Save
+   * @param {import('../types/ovm.js').OvmItem[]} updatedItems
+   */
+  const updateItems = (updatedItems) => {
+    setItems(updatedItems);
+    onChange(updatedItems);
+    debouncedSave(updatedItems);
+  };
 
   /**
    * Toggle-Handler für Gruppen-Aufklappen
@@ -53,8 +76,7 @@ export default function OvmChecklist({ checklist, onChange }) {
       return item;
     });
 
-    setItems(updatedItems);
-    onChange(updatedItems);
+    updateItems(updatedItems);
   };
 
   /**
@@ -93,16 +115,43 @@ export default function OvmChecklist({ checklist, onChange }) {
       });
     }
 
-    setItems(updatedItems);
-    onChange(updatedItems);
+    updateItems(updatedItems);
   };
 
   const groups = groupOvmItemsByBereich(items);
 
   return (
     <div className="ovm-checklist">
-      <h3 className="ovm-title">OVM-Checkliste Magdeburg 2024</h3>
-      <p className="ovm-subtitle">Ortsübliche Vergleichsmiete - Erfassungsbogen</p>
+      <div className="ovm-checklist-header">
+        <div>
+          <h3 className="ovm-title">OVM-Checkliste Magdeburg 2024</h3>
+          <p className="ovm-subtitle">Ortsübliche Vergleichsmiete - Erfassungsbogen</p>
+        </div>
+        
+        {/* Save Status Indicator */}
+        {saveStatus !== 'idle' && (
+          <div className={`ovm-save-status ovm-save-status--${saveStatus}`}>
+            {saveStatus === 'saving' && (
+              <>
+                <span className="ovm-save-spinner"></span>
+                Speichere...
+              </>
+            )}
+            {saveStatus === 'saved' && (
+              <>
+                <span className="ovm-save-icon">✓</span>
+                Gespeichert
+              </>
+            )}
+            {saveStatus === 'error' && (
+              <>
+                <span className="ovm-save-icon">⚠</span>
+                {saveError || 'Fehler beim Speichern'}
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
       {groups.map((group) => {
         const isGroupExpanded = expandedGroups.has(group.bereich);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { loadMagdeburgObjects } from './lib/ovm.js';
+import { getStorageProvider, mergeAnswers } from './lib/storage/ovmStorage.js';
 import OvmChecklist from './components/OvmChecklist.jsx';
 
 // ============================================================================
@@ -782,6 +783,7 @@ function ObjectDetail({ objekt, onChecklistToggle }) {
       
       {objekt.ovm_checkliste && (
         <OvmChecklist 
+          objectId={objekt.id}
           checklist={objekt.ovm_checkliste} 
           onChange={onChecklistToggle}
         />
@@ -836,12 +838,32 @@ function App() {
   // State: Loading-Status
   const [loading, setLoading] = useState(true);
 
-  // Lade Objekte beim Start
+  // Lade Objekte beim Start und merge gespeicherte Antworten
   useEffect(() => {
     const loadData = async () => {
       try {
         const loadedObjects = await loadMagdeburgObjects();
-        setObjekte(loadedObjects);
+        const storageProvider = getStorageProvider();
+        
+        // Lade gespeicherte Antworten für jedes Objekt und merge
+        const objectsWithSavedAnswers = await Promise.all(
+          loadedObjects.map(async (obj) => {
+            if (!obj.ovm_checkliste) {
+              return obj;
+            }
+            
+            try {
+              const savedData = await storageProvider.load(obj.id);
+              const mergedChecklist = mergeAnswers(obj.ovm_checkliste, savedData);
+              return { ...obj, ovm_checkliste: mergedChecklist };
+            } catch (error) {
+              console.warn(`Fehler beim Laden für Objekt ${obj.id}:`, error);
+              return obj;
+            }
+          })
+        );
+        
+        setObjekte(objectsWithSavedAnswers);
         setLoading(false);
       } catch (error) {
         console.error('Fehler beim Laden der Objekte:', error);
