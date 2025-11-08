@@ -366,7 +366,7 @@ export function mergeAnswers(templateChecklist, savedData) {
 
     // Merge Radio-Button Antwort
     if (item.antworttyp === 'wahl' && savedAnswer.antwort) {
-      return { ...item, antwort: savedAnswer.antwort as "Ja" | "Nein" | "nicht gesehen" };
+      return { ...item, antwort: savedAnswer.antwort };
     }
 
     // Merge Eingabewert
