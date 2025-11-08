@@ -101,46 +101,85 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
         <p>{object.adresse}</p>
         
         {/* Objektinformationen */}
-        {(object.grundmiete || object.baujahr || object.energieklasse) && (
-          <div className="objekt-info-grid" style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-            gap: '1rem',
-            marginTop: '1.5rem',
-            marginBottom: '2rem'
-          }}>
-            {object.grundmiete && (
-              <div className="info-item">
-                <span className="info-label">Grundmiete:</span>
-                <span className="info-value">{object.grundmiete}</span>
-              </div>
-            )}
-            {object.durchschnittsmiete && (
-              <div className="info-item">
-                <span className="info-label">Ø Miete/m²:</span>
-                <span className="info-value">{object.durchschnittsmiete}</span>
-              </div>
-            )}
-            {object.zielmiete && (
-              <div className="info-item">
-                <span className="info-label">Zielmiete/m²:</span>
-                <span className="info-value">{object.zielmiete}</span>
-              </div>
-            )}
-            {object.baujahr && (
-              <div className="info-item">
-                <span className="info-label">Baujahr:</span>
-                <span className="info-value">{object.baujahr}</span>
-              </div>
-            )}
-            {object.energieklasse && (
-              <div className="info-item">
-                <span className="info-label">Energieklasse:</span>
-                <span className="info-value">{object.energieklasse}</span>
-              </div>
-            )}
-          </div>
-        )}
+        <div className="objekt-info-grid" style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          gap: '1rem',
+          marginTop: '1.5rem',
+          marginBottom: '2rem'
+        }}>
+          {/* 1. Grundmiete */}
+          {object.grundmiete && (
+            <div className="info-item">
+              <span className="info-label">Grundmiete:</span>
+              <span className="info-value">{object.grundmiete}</span>
+            </div>
+          )}
+          
+          {/* 2. Ø-Miete pro m² (durchschnittlich) */}
+          {object.durchschnitt_miete_qm && (
+            <div className="info-item">
+              <span className="info-label">Ø-Miete/m²:</span>
+              <span className="info-value">{object.durchschnitt_miete_qm}</span>
+            </div>
+          )}
+          
+          {/* 3. Energieeffizienzklasse */}
+          {object.energieklasse && (
+            <div className="info-item">
+              <span className="info-label">Energieklasse:</span>
+              <span className="info-value">{object.energieklasse}</span>
+            </div>
+          )}
+          
+          {/* 4. Vermietbare Fläche (m²) */}
+          {object.vermietbare_flaeche_qm && (
+            <div className="info-item">
+              <span className="info-label">Vermietbare Fläche:</span>
+              <span className="info-value">{object.vermietbare_flaeche_qm} m²</span>
+            </div>
+          )}
+          
+          {/* 5. Wohneinheiten */}
+          {object.wohneinheiten !== undefined && object.wohneinheiten !== null && (
+            <div className="info-item">
+              <span className="info-label">Wohneinheiten:</span>
+              <span className="info-value">{object.wohneinheiten}</span>
+            </div>
+          )}
+          
+          {/* 6. Gewerbeeinheiten */}
+          {object.gewerbeeinheiten !== undefined && object.gewerbeeinheiten !== null && (
+            <div className="info-item">
+              <span className="info-label">Gewerbeeinheiten:</span>
+              <span className="info-value">{object.gewerbeeinheiten}</span>
+            </div>
+          )}
+          
+          {/* 7. Stellplätze */}
+          {object.stellplaetze !== undefined && object.stellplaetze !== null && (
+            <div className="info-item">
+              <span className="info-label">Stellplätze:</span>
+              <span className="info-value">{object.stellplaetze}</span>
+            </div>
+          )}
+          
+          {/* 8. Energieträger */}
+          {object.energietraeger && (
+            <div className="info-item">
+              <span className="info-label">Energieträger:</span>
+              <span className="info-value">{object.energietraeger}</span>
+            </div>
+          )}
+          
+          {/* Baujahr (optional) */}
+          {object.baujahr && (
+            <div className="info-item">
+              <span className="info-label">Baujahr:</span>
+              <span className="info-value">{object.baujahr}</span>
+            </div>
+          )}
+        </div>
 
         {/* OVM Checkliste */}
         {object.ovm_checkliste ? (

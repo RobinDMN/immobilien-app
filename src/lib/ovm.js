@@ -15,6 +15,43 @@ import ovmChecklisteTemplate from '../data/mietspiegel_checkliste_magdeburg_2024
 const EXCLUDED_BASE_FIELD_IDS = ['OVM-1', 'OVM-2', 'OVM-3', 'OVM-4'];
 
 /**
+ * Normalisiert eine Adresse für konsistentes Matching
+ * @param {string} address - Straße + Hausnummer
+ * @param {string} plz - Postleitzahl
+ * @returns {string} Normalisierte Adresse (lowercase, ohne Spaces, Straße→Str.)
+ */
+function normalizeAddress(address, plz) {
+  if (!address || !plz) return '';
+  
+  return address
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, ' ') // Multiple Spaces → Single Space
+    .replace(/straße/g, 'str.') // Straße → Str.
+    .replace(/strasse/g, 'str.') // Strasse → Str.
+    .replace(/\./g, '') // Punkte entfernen für konsistentes Matching
+    + '|' + plz.trim();
+}
+
+/**
+ * Lädt Zusatzdaten (Mieten, Energieklasse, Einheiten)
+ * @returns {Promise<Array<{name: string, plz: string, vermietbare_flaeche_qm?: number, wohneinheiten?: number, gewerbeeinheiten?: number, stellplaetze?: number, grundmiete?: string, durchschnitt_miete_qm?: string, energieklasse?: string|null, energietraeger?: string|null}>>}
+ */
+async function loadZusatzdaten() {
+  try {
+    const response = await fetch('/data/objekt_zusatzdaten_magdeburg_mit_mieten.json');
+    if (!response.ok) {
+      console.warn('Zusatzdaten konnten nicht geladen werden:', response.status);
+      return [];
+    }
+    return await response.json();
+  } catch (error) {
+    console.warn('Fehler beim Laden der Zusatzdaten:', error);
+    return [];
+  }
+}
+
+/**
  * Erstellt eine tiefe Kopie der OVM-Checkliste und entfernt Basisfelder
  * @returns {import('../types/ovm.js').OvmItem[]}
  */
@@ -36,27 +73,54 @@ function filterBaseFields(checklist) {
 /**
  * Lädt alle Magdeburg-Objekte und ergänzt fehlende ovm_checkliste
  * Entfernt Basisfelder (OVM-1 bis OVM-4) aus allen Checklisten
+ * Merged Zusatzdaten (Mieten, Energieklasse, Einheiten)
  * @returns {Promise<import('../types/ovm.js').PropertyObject[]>}
  */
 export async function loadMagdeburgObjects() {
+  // Lade Zusatzdaten parallel
+  const zusatzdaten = await loadZusatzdaten();
+  
+  // Erstelle Lookup-Map: normalisierte Adresse → Zusatzdaten
+  const zusatzdatenMap = new Map();
+  zusatzdaten.forEach(zd => {
+    const key = normalizeAddress(zd.name, zd.plz);
+    if (key) {
+      zusatzdatenMap.set(key, zd);
+    }
+  });
+  
   // Simuliere async (für zukünftige API-Anbindung)
   return new Promise((resolve) => {
     setTimeout(() => {
       const objects = objekteData.map((obj) => {
+        // Normalisiere Adresse des Objekts für Matching
+        const objectKey = normalizeAddress(obj.name, obj.adresse?.split(',').pop()?.trim() || '');
+        const zusatz = zusatzdatenMap.get(objectKey);
+        
         // @ts-ignore - Property wird dynamisch hinzugefügt
-        if (!obj.ovm_checkliste) {
-          // Neue Checkliste: bereits gefiltert durch deepCopyOvmChecklist()
+        const baseObject = {
+          ...obj,
+          ovm_checkliste: obj.ovm_checkliste 
+            ? filterBaseFields(obj.ovm_checkliste)
+            : deepCopyOvmChecklist()
+        };
+        
+        // Merge Zusatzdaten falls vorhanden
+        if (zusatz) {
           return {
-            ...obj,
-            ovm_checkliste: deepCopyOvmChecklist()
-          };
-        } else {
-          // Bestehende Checkliste: ebenfalls Basisfelder entfernen
-          return {
-            ...obj,
-            ovm_checkliste: filterBaseFields(obj.ovm_checkliste)
+            ...baseObject,
+            vermietbare_flaeche_qm: zusatz.vermietbare_flaeche_qm,
+            wohneinheiten: zusatz.wohneinheiten,
+            gewerbeeinheiten: zusatz.gewerbeeinheiten,
+            stellplaetze: zusatz.stellplaetze,
+            grundmiete: zusatz.grundmiete,
+            durchschnitt_miete_qm: zusatz.durchschnitt_miete_qm,
+            energieklasse: zusatz.energieklasse,
+            energietraeger: zusatz.energietraeger
           };
         }
+        
+        return baseObject;
       });
       
       resolve(objects);
