@@ -34,6 +34,14 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
     }
 
     console.log('[ObjectDetail] Objekt gefunden:', foundObject.name);
+    console.log('[ObjectDetail] Zusatzdaten:', {
+      grundmiete: foundObject.grundmiete,
+      durchschnitt_miete_qm: foundObject.durchschnitt_miete_qm,
+      vermietbare_flaeche_qm: foundObject.vermietbare_flaeche_qm,
+      wohneinheiten: foundObject.wohneinheiten,
+      gewerbeeinheiten: foundObject.gewerbeeinheiten,
+      stellplaetze: foundObject.stellplaetze
+    });
     setObject(foundObject);
     setError(null);
     setLoading(false);
