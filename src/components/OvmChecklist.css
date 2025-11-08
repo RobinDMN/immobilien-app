@@ -1,0 +1,262 @@
+/* ============================================================================
+   OVM CHECKLIST STYLES
+   ============================================================================ */
+
+.ovm-checklist {
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ovm-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 4px 0;
+}
+
+.ovm-subtitle {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  margin: 0 0 24px 0;
+}
+
+/* Gruppen */
+.ovm-group {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.ovm-group:last-child {
+  border-bottom: none;
+}
+
+.ovm-group-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #34495e;
+  margin: 0 0 16px 0;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-left: 4px solid #3498db;
+  border-radius: 4px;
+}
+
+/* Items - Aufklappbar */
+.ovm-item {
+  margin-bottom: 12px;
+  background-color: #fafbfc;
+  border-radius: 6px;
+  border: 1px solid #e1e4e8;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.ovm-item:hover {
+  border-color: #cbd5e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.ovm-item-expanded {
+  border-color: #3498db;
+  background-color: #fff;
+}
+
+.ovm-item-header {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.ovm-item-header:hover {
+  background-color: #f0f8ff;
+}
+
+.ovm-item-expanded .ovm-item-header {
+  background-color: #e3f2fd;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.ovm-item-header-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+}
+
+.ovm-item-expand-icon {
+  font-size: 0.75rem;
+  color: #7f8c8d;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.ovm-item-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  cursor: pointer;
+}
+
+.ovm-item-content {
+  padding: 16px;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ovm-item-id {
+  display: inline-block;
+  background-color: #3498db;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+.ovm-item-hint {
+  cursor: help;
+  font-size: 1.2rem;
+  color: #3498db;
+}
+
+.ovm-item-hint-text {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background-color: #e8f4f8;
+  border-left: 3px solid #3498db;
+  font-size: 0.85rem;
+  color: #555;
+  border-radius: 4px;
+  line-height: 1.5;
+}
+
+/* Radio-Buttons */
+.ovm-radio-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.ovm-radio-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #555;
+  padding: 6px 12px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.ovm-radio-label:hover {
+  border-color: #3498db;
+  background-color: #f0f8ff;
+}
+
+.ovm-radio-label:has(input:checked) {
+  border-color: #3498db;
+  background-color: #e3f2fd;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.ovm-radio-input {
+  margin-right: 8px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #3498db;
+}
+
+.ovm-radio-text {
+  user-select: none;
+}
+
+/* Input-Felder */
+.ovm-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ovm-input {
+  flex: 1;
+  max-width: 300px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.ovm-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.ovm-input-error {
+  border-color: #e74c3c;
+}
+
+.ovm-input-error:focus {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+.ovm-input-unit {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ovm-validation-error {
+  margin-top: 6px;
+  padding: 8px 12px;
+  background-color: #ffe6e6;
+  border-left: 3px solid #e74c3c;
+  color: #c0392b;
+  font-size: 0.85rem;
+  border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ovm-checklist {
+    padding: 16px;
+  }
+
+  .ovm-radio-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ovm-input {
+    max-width: 100%;
+  }
+}

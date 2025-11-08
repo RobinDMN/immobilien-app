@@ -1,0 +1,416 @@
+[
+  {
+    "id": "OVM-1",
+    "bereich": "I. Grundlagen (Schritt 1 & 3)",
+    "titel": "Wohnfläche (WF)",
+    "antworttyp": "eingabe",
+    "format": "number",
+    "wert": null,
+    "einheit": "m²",
+    "hinweis": "Mietspiegel gilt für 20–200 m². Auf ganze m² runden."
+  },
+  {
+    "id": "OVM-2",
+    "bereich": "I. Grundlagen (Schritt 1 & 3)",
+    "titel": "Adresse (Straße, Hausnr., PLZ) für Lagezuordnung",
+    "antworttyp": "eingabe",
+    "format": "text",
+    "wert": null,
+    "hinweis": "Zuordnung zum Statistischen Bezirk (Lagezu-/Abschlag)."
+  },
+  {
+    "id": "OVM-3",
+    "bereich": "II. Wohnflächenabhängige Merkmale (Schritt 4, Tabelle 4.1)",
+    "titel": "Baualtersklasse (Jahr der Bezugsfertigkeit)",
+    "antworttyp": "eingabe",
+    "format": "number",
+    "wert": null,
+    "hinweis": "Klassen: ≤1925, 1926–1959, 1960–1992, 1993–2002, 2003–2014, ≥2015."
+  },
+  {
+    "id": "OVM-4",
+    "bereich": "II. Wohnflächenabhängige Merkmale (Schritt 4, Tabelle 4.1)",
+    "titel": "Denkmalschutz vorhanden",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-5",
+    "bereich": "II. Wohnflächenabhängige Merkmale (Schritt 4, Tabelle 4.1)",
+    "titel": "Gebäude freistehend oder einseitig angebaut",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-6",
+    "bereich": "II. Wohnflächenabhängige Merkmale (Schritt 4, Tabelle 4.1)",
+    "titel": "Maximal 9 Wohneinheiten im Haus",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-7",
+    "bereich": "II. Wohnflächenabhängige Merkmale (Schritt 4, Tabelle 4.1)",
+    "titel": "Maximal 3 Geschosse (EG/Hochparterre zählt als 1)",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-8",
+    "bereich": "II. Wohnflächenabhängige Merkmale (Schritt 4, Tabelle 4.1)",
+    "titel": "Fahrstuhl vorhanden UND Gebäude ≤ 6 Geschosse",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-9",
+    "bereich": "II. Wohnflächenabhängige Merkmale (Schritt 4, Tabelle 4.1)",
+    "titel": "Einzimmerwohnung",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-10",
+    "bereich": "II. Wohnflächenabhängige Merkmale (Schritt 4, Tabelle 4.1)",
+    "titel": "Abschließbarer Kellerraum gehört zur Wohnung",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-11",
+    "bereich": "II. Wohnflächenabhängige Merkmale (Schritt 4, Tabelle 4.1)",
+    "titel": "Außenfläche: Balkon/Loggia vorhanden",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-12",
+    "bereich": "II. Wohnflächenabhängige Merkmale (Schritt 4, Tabelle 4.1)",
+    "titel": "Außenfläche: (Dach-)Terrasse vorhanden",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-13",
+    "bereich": "II. Wohnflächenabhängige Merkmale (Schritt 4, Tabelle 4.1)",
+    "titel": "Barrierefreiheit (bis zur Wohnungstür und alle Räume; Schwellen ≤ 4 cm)",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-14",
+    "bereich": "III.A Wohnungsausstattung (Tabelle 2.1)",
+    "titel": "Videogegensprechanlage mit Türöffner",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-15",
+    "bereich": "III.A Wohnungsausstattung (Tabelle 2.1)",
+    "titel": "Keine Gegensprechanlage mit Türöffner (nur in MFH relevant)",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-16",
+    "bereich": "III.A Wohnungsausstattung (Tabelle 2.1)",
+    "titel": "Fenster überwiegend mit Rollläden/Jalousien/Fensterläden",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-17",
+    "bereich": "III.A Wohnungsausstattung (Tabelle 2.1)",
+    "titel": "Klimaanlage vorhanden",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-18",
+    "bereich": "III.A Wohnungsausstattung (Tabelle 2.1)",
+    "titel": "Böden (Wohnräume): Vinyl-Design oder Parkett/Dielenholz überwiegt",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-19",
+    "bereich": "III.A Wohnungsausstattung (Tabelle 2.1)",
+    "titel": "Kein Fußbodenbelag vom Vermietenden (Rohboden)",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-20",
+    "bereich": "III.A Wohnungsausstattung (Tabelle 2.1)",
+    "titel": "Küchenboden: Fliesen oder Naturstein/Marmor",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-21",
+    "bereich": "III.A Wohnungsausstattung (Tabelle 2.1)",
+    "titel": "Einbauschränke außerhalb der Einbauküche vorhanden",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-22",
+    "bereich": "III.B Wohnungsgrundriss (Tabelle 2.2)",
+    "titel": "Zusätzliches Gäste-WC oder zweites Bad vorhanden",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-23",
+    "bereich": "III.B Wohnungsgrundriss (Tabelle 2.2)",
+    "titel": "Offene (amerikanische) Küche",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-24",
+    "bereich": "III.B Wohnungsgrundriss (Tabelle 2.2)",
+    "titel": "Abstellraum in der Wohnung",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-25",
+    "bereich": "III.B Wohnungsgrundriss (Tabelle 2.2)",
+    "titel": "Küchenfläche ≥ 8 m²",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-26",
+    "bereich": "III.B Wohnungsgrundriss (Tabelle 2.2)",
+    "titel": "Hauptbadfläche ≥ 5 m²",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-27",
+    "bereich": "III.B Wohnungsgrundriss (Tabelle 2.2)",
+    "titel": "Dachschrägen vorhanden (negativ)",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-28",
+    "bereich": "III.B Wohnungsgrundriss (Tabelle 2.2)",
+    "titel": "Mindestens ein Durchgangszimmer (negativ)",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-29",
+    "bereich": "III.B Wohnungsgrundriss (Tabelle 2.2)",
+    "titel": "Keine Tageslichtküche (weder Fenster noch Balkontür) (negativ)",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-30",
+    "bereich": "III.C Sanitärausstattung (Tabelle 2.3)",
+    "titel": "Ebenerdige Dusche im Hauptbad",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-31",
+    "bereich": "III.C Sanitärausstattung (Tabelle 2.3)",
+    "titel": "Sowohl Dusche als auch Badewanne im Hauptbad",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-32",
+    "bereich": "III.C Sanitärausstattung (Tabelle 2.3)",
+    "titel": "Doppelwaschbecken im Hauptbad",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-33",
+    "bereich": "III.C Sanitärausstattung (Tabelle 2.3)",
+    "titel": "Handtuchheizung im Hauptbad",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-34",
+    "bereich": "III.C Sanitärausstattung (Tabelle 2.3)",
+    "titel": "Hauptbad-Nassbereich Rohboden (negativ)",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-35",
+    "bereich": "III.C Sanitärausstattung (Tabelle 2.3)",
+    "titel": "Kein Spritzschutz an den Wänden im Hauptbad (negativ)",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-36",
+    "bereich": "III.C Sanitärausstattung (Tabelle 2.3)",
+    "titel": "Keine Lüftungsmöglichkeit im Hauptbad (negativ)",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-37",
+    "bereich": "III.D Gemeinschaftsausstattung (Tabelle 2.4)",
+    "titel": "Abschließbarer Fahrradabstellraum",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-38",
+    "bereich": "III.D Gemeinschaftsausstattung (Tabelle 2.4)",
+    "titel": "Waschküche vorhanden",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-39",
+    "bereich": "III.D Gemeinschaftsausstattung (Tabelle 2.4)",
+    "titel": "Vom Vermietenden gestellte Waschmaschine",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-40",
+    "bereich": "III.D Gemeinschaftsausstattung (Tabelle 2.4)",
+    "titel": "Mindestens eine E-Auto-Ladestation",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-41",
+    "bereich": "III.D Gemeinschaftsausstattung (Tabelle 2.4)",
+    "titel": "Mindestens eine E-Bike-Ladestation",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-42",
+    "bereich": "III.E Energetische Ausstattung (Tabelle 2.5)",
+    "titel": "Wärmepumpe zur (teilweisen) Wärmeerzeugung",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-43",
+    "bereich": "III.E Energetische Ausstattung (Tabelle 2.5)",
+    "titel": "Solarthermie zur Warmwassererzeugung",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-44",
+    "bereich": "III.E Energetische Ausstattung (Tabelle 2.5)",
+    "titel": "Etagenheizung / eigene Heizung für die Wohnung",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-45",
+    "bereich": "III.E Energetische Ausstattung (Tabelle 2.5)",
+    "titel": "Wasserführende Flächenheizung in Wohnräumen, Küche und Bad",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-46",
+    "bereich": "III.E Energetische Ausstattung (Tabelle 2.5)",
+    "titel": "Fenster überwiegend dreifach verglast",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-47",
+    "bereich": "III.E Energetische Ausstattung (Tabelle 2.5)",
+    "titel": "Fenster überwiegend Kastendoppelfenster",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-48",
+    "bereich": "III.E Energetische Ausstattung (Tabelle 2.5)",
+    "titel": "Primäre Beheizung durch Heizöl (negativ)",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-49",
+    "bereich": "III.E Energetische Ausstattung (Tabelle 2.5)",
+    "titel": "Fenster überwiegend einfach verglast (negativ)",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen"
+  },
+  {
+    "id": "OVM-50",
+    "bereich": "IV. Wohnflächenunabhängige Zuschläge (Schritt 6)",
+    "titel": "Einbauküche gemäß Definition vorhanden",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen",
+    "hinweis": "Nur anrechnen, wenn in Grundmiete enthalten, nicht separat ausgewiesen."
+  },
+  {
+    "id": "OVM-51",
+    "bereich": "IV. Wohnflächenunabhängige Zuschläge (Schritt 6)",
+    "titel": "Stellplatz in der Grundmiete enthalten",
+    "antworttyp": "wahl",
+    "optionen": ["Ja", "Nein", "nicht gesehen"],
+    "antwort": "nicht gesehen",
+    "hinweis": "Nur anrechnen, wenn nicht separat ausgewiesen."
+  }
+]
