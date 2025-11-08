@@ -22,92 +22,58 @@
   margin: 0 0 24px 0;
 }
 
-/* Gruppen */
+/* Gruppen - Aufklappbar */
 .ovm-group {
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #ecf0f1;
-}
-
-.ovm-group:last-child {
-  border-bottom: none;
-}
-
-.ovm-group-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #34495e;
-  margin: 0 0 16px 0;
-  padding: 8px 12px;
-  background-color: #f8f9fa;
-  border-left: 4px solid #3498db;
-  border-radius: 4px;
-}
-
-/* Items - Aufklappbar */
-.ovm-item {
-  margin-bottom: 12px;
-  background-color: #fafbfc;
-  border-radius: 6px;
+  margin-bottom: 16px;
   border: 1px solid #e1e4e8;
+  border-radius: 8px;
   overflow: hidden;
-  transition: all 0.2s ease;
-}
-
-.ovm-item:hover {
-  border-color: #cbd5e0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.ovm-item-expanded {
-  border-color: #3498db;
   background-color: #fff;
 }
 
-.ovm-item-header {
+.ovm-group-header {
   display: flex;
   align-items: center;
-  padding: 12px;
+  gap: 12px;
+  padding: 14px 16px;
+  background-color: #f8f9fa;
   cursor: pointer;
   user-select: none;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid transparent;
 }
 
-.ovm-item-header:hover {
-  background-color: #f0f8ff;
+.ovm-group-header:hover {
+  background-color: #e9ecef;
 }
 
-.ovm-item-expanded .ovm-item-header {
+.ovm-group-header:focus {
+  outline: 2px solid #3498db;
+  outline-offset: -2px;
+}
+
+.ovm-group-expanded {
   background-color: #e3f2fd;
-  border-bottom: 1px solid #e1e4e8;
+  border-bottom-color: #e1e4e8;
 }
 
-.ovm-item-header-content {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  gap: 8px;
-}
-
-.ovm-item-expand-icon {
-  font-size: 0.75rem;
+.ovm-group-icon {
+  font-size: 0.85rem;
   color: #7f8c8d;
   flex-shrink: 0;
   transition: transform 0.2s ease;
 }
 
-.ovm-item-label {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #333;
-  display: flex;
-  align-items: center;
+.ovm-group-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #34495e;
+  margin: 0;
   flex: 1;
-  cursor: pointer;
 }
 
-.ovm-item-content {
-  padding: 16px;
+.ovm-group-content {
+  padding: 8px 0;
   animation: slideDown 0.2s ease-out;
 }
 
@@ -120,6 +86,52 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Items - Inline Layout (nicht aufklappbar) */
+.ovm-item {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.15s ease;
+}
+
+.ovm-item:last-child {
+  border-bottom: none;
+}
+
+.ovm-item:hover {
+  background-color: #fafbfc;
+}
+
+.ovm-item-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* Linke Seite: Titel + Hinweis */
+.ovm-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ovm-item-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+/* Rechte Seite: Controls */
+.ovm-item-controls {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .ovm-item-id {
@@ -140,35 +152,35 @@
 }
 
 .ovm-item-hint-text {
-  margin-top: 12px;
-  padding: 10px 14px;
-  background-color: #e8f4f8;
+  margin-top: 6px;
+  padding: 6px 10px;
+  background-color: #f0f8ff;
   border-left: 3px solid #3498db;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #555;
-  border-radius: 4px;
-  line-height: 1.5;
+  border-radius: 3px;
+  line-height: 1.4;
 }
 
-/* Radio-Buttons */
+/* Radio-Buttons - Inline (rechtsbündig) */
 .ovm-radio-group {
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
+  gap: 8px;
+  flex-wrap: nowrap;
 }
 
 .ovm-radio-label {
   display: flex;
   align-items: center;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #555;
-  padding: 6px 12px;
-  border: 2px solid #ddd;
+  padding: 8px 12px;
+  border: 1.5px solid #ddd;
   border-radius: 6px;
   transition: all 0.2s ease;
   background-color: white;
+  white-space: nowrap;
 }
 
 .ovm-radio-label:hover {
@@ -184,10 +196,10 @@
 }
 
 .ovm-radio-input {
-  margin-right: 8px;
+  margin-right: 6px;
   cursor: pointer;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   accent-color: #3498db;
 }
 
@@ -195,7 +207,7 @@
   user-select: none;
 }
 
-/* Input-Felder */
+/* Input-Felder - Kompakt inline */
 .ovm-input-group {
   display: flex;
   align-items: center;
@@ -203,11 +215,10 @@
 }
 
 .ovm-input {
-  flex: 1;
-  max-width: 300px;
-  padding: 10px 12px;
-  font-size: 0.95rem;
-  border: 2px solid #ddd;
+  width: 200px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border: 1.5px solid #ddd;
   border-radius: 6px;
   transition: all 0.2s ease;
   background-color: white;
@@ -245,18 +256,40 @@
   border-radius: 4px;
 }
 
-/* Responsive */
+/* Responsive - Mobil: Controls unter Titel */
 @media (max-width: 768px) {
   .ovm-checklist {
     padding: 16px;
   }
 
-  .ovm-radio-group {
+  .ovm-item-row {
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
+  }
+
+  .ovm-item-controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .ovm-radio-group {
+    flex-wrap: wrap;
   }
 
   .ovm-input {
-    max-width: 100%;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .ovm-group-header {
+    padding: 12px 14px;
+  }
+
+  .ovm-group-title {
+    font-size: 1rem;
+  }
+
+  .ovm-item {
+    padding: 12px 14px;
   }
 }
