@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { groupOvmItemsByBereich, validateWohnflaeche } from '../lib/ovm.js';
 import { getStorageProvider, createAnswerData } from '../lib/storage/ovmStorage.js';
 import { useDebouncedSave } from '../hooks/useDebouncedSave.js';
+import { useUser } from '../contexts/UserContext.jsx';
 import './OvmChecklist.css';
 
 /**
@@ -17,6 +18,7 @@ import './OvmChecklist.css';
  * @param {(updatedChecklist: import('../types/ovm.js').OvmItem[]) => void} props.onChange - Callback bei Änderungen
  */
 export default function OvmChecklist({ objectId, checklist, onChange }) {
+  const { userSlug } = useUser();
   const [items, setItems] = useState(checklist);
   /** @type {[Record<string, string>, Function]} */
   const [validationErrors, setValidationErrors] = useState({});
@@ -27,8 +29,9 @@ export default function OvmChecklist({ objectId, checklist, onChange }) {
   const storageProvider = getStorageProvider();
   const { save: debouncedSave, status: saveStatus, error: saveError } = useDebouncedSave(
     async (updatedItems) => {
+      if (!userSlug) return; // Skip wenn kein User
       const answerData = createAnswerData(objectId, updatedItems);
-      await storageProvider.save(objectId, answerData);
+      await storageProvider.save(userSlug, objectId, answerData);
     },
     500
   );

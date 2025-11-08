@@ -3,6 +3,8 @@ import './App.css';
 import { loadMagdeburgObjects } from './lib/ovm.js';
 import { getStorageProvider, mergeAnswers } from './lib/storage/ovmStorage.js';
 import OvmChecklist from './components/OvmChecklist.jsx';
+import { UserProvider, useUser } from './contexts/UserContext.jsx';
+import LoginModal from './components/LoginModal.jsx';
 
 // ============================================================================
 // IMMOBILIEN-DATEN MAGDEBURG (wird durch loadMagdeburgObjects ersetzt)
@@ -825,10 +827,12 @@ function Sidebar({ objekte, selectedId, onSelect }) {
 // KOMPONENTE: App (Root)
 // ============================================================================
 /**
- * Hauptkomponente der Immobilien-Besichtigungs-App.
+ * Hauptkomponente der Immobilien-Besichtigungs-App (intern).
  * Verwaltet den gesamten State für Objekte und Checklisten.
  */
-function App() {
+function AppContent() {
+  const { currentUser, userSlug, showLogin } = useUser();
+  
   // State: Alle Objekte mit ihren Checklisten
   const [objekte, setObjekte] = useState([]);
   
@@ -840,7 +844,13 @@ function App() {
 
   // Lade Objekte beim Start und merge gespeicherte Antworten
   useEffect(() => {
+    if (!userSlug) {
+      setLoading(false);
+      return;
+    }
+
     const loadData = async () => {
+      setLoading(true);
       try {
         const loadedObjects = await loadMagdeburgObjects();
         const storageProvider = getStorageProvider();
@@ -853,7 +863,7 @@ function App() {
             }
             
             try {
-              const savedData = await storageProvider.load(obj.id);
+              const savedData = await storageProvider.load(userSlug, obj.id);
               const mergedChecklist = mergeAnswers(obj.ovm_checkliste, savedData);
               return { ...obj, ovm_checkliste: mergedChecklist };
             } catch (error) {
@@ -871,7 +881,7 @@ function App() {
       }
     };
     loadData();
-  }, []);
+  }, [userSlug]); // Reload wenn sich der User ändert
 
   // Aktuell ausgewähltes Objekt finden
   const selectedObjekt = objekte.find(obj => obj.id === selectedId) || null;
@@ -906,16 +916,38 @@ function App() {
 
   return (
     <div className="app">
-      <Sidebar
-        objekte={objekte}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-      />
-      <ObjectDetail
-        objekt={selectedObjekt}
-        onChecklistToggle={handleChecklistChange}
-      />
+      <header className="app-header">
+        <div className="user-info">
+          Angemeldet als: <strong>{currentUser}</strong>
+          <button onClick={showLogin} className="btn-user-switch">
+            Benutzer wechseln
+          </button>
+        </div>
+      </header>
+      <div className="app-content">
+        <Sidebar
+          objekte={objekte}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+        />
+        <ObjectDetail
+          objekt={selectedObjekt}
+          onChecklistToggle={handleChecklistChange}
+        />
+      </div>
     </div>
+  );
+}
+
+/**
+ * App-Wrapper mit UserProvider
+ */
+function App() {
+  return (
+    <UserProvider>
+      <AppContent />
+      <LoginModal />
+    </UserProvider>
   );
 }
 

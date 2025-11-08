@@ -11,11 +11,13 @@
 const SCHEMA_VERSION = 'ms-2024.1';
 
 /**
- * Storage-Provider Interface
+ * Storage-Provider Interface (benutzerspezifisch)
  * @typedef {Object} StorageProvider
- * @property {(objectId: string) => Promise<OvmAnswerData | null>} load
- * @property {(objectId: string, data: OvmAnswerData) => Promise<void>} save
- * @property {(objectId: string) => Promise<void>} clear
+ * @property {(userSlug: string, objectId: string) => Promise<OvmAnswerData | null>} load
+ * @property {(userSlug: string, objectId: string, data: OvmAnswerData) => Promise<void>} save
+ * @property {(userSlug: string, objectId: string) => Promise<void>} clear
+ * @property {() => Promise<string[]>} listLegacyKeys - Liste alte Keys ohne User-Scope
+ * @property {(legacyKey: string, userSlug: string) => Promise<void>} migrate - Migriere alten Key zu neuem User-Scope
  */
 
 /**
@@ -34,30 +36,41 @@ const SCHEMA_VERSION = 'ms-2024.1';
  */
 
 /**
- * LocalStorage Provider (Default)
+ * LocalStorage Provider (Default) - mit User-Namespace
  */
 class LocalStorageProvider {
   /**
-   * Generiert stabilen Key für LocalStorage
+   * Generiert stabilen Key für LocalStorage mit User-Scope
+   * @param {string} userSlug
    * @param {string} objectId
    * @returns {string}
    */
-  getStorageKey(objectId) {
+  getStorageKey(userSlug, objectId) {
+    return `immobilien-app:${SCHEMA_VERSION}:${userSlug}:ovm:${objectId}`;
+  }
+
+  /**
+   * Legacy-Key-Pattern (alte Version ohne User)
+   * @param {string} objectId
+   * @returns {string}
+   */
+  getLegacyKey(objectId) {
     return `immobilien-app:ovm:${SCHEMA_VERSION}:${objectId}`;
   }
 
   /**
    * Lädt gespeicherte Antworten aus LocalStorage
+   * @param {string} userSlug
    * @param {string} objectId
    * @returns {Promise<OvmAnswerData | null>}
    */
-  async load(objectId) {
+  async load(userSlug, objectId) {
     try {
       if (typeof window === 'undefined' || !window.localStorage) {
         return null;
       }
 
-      const key = this.getStorageKey(objectId);
+      const key = this.getStorageKey(userSlug, objectId);
       const raw = localStorage.getItem(key);
       
       if (!raw) {
@@ -81,17 +94,18 @@ class LocalStorageProvider {
 
   /**
    * Speichert Antworten in LocalStorage
+   * @param {string} userSlug
    * @param {string} objectId
    * @param {OvmAnswerData} data
    * @returns {Promise<void>}
    */
-  async save(objectId, data) {
+  async save(userSlug, objectId, data) {
     try {
       if (typeof window === 'undefined' || !window.localStorage) {
         throw new Error('LocalStorage nicht verfügbar');
       }
 
-      const key = this.getStorageKey(objectId);
+      const key = this.getStorageKey(userSlug, objectId);
       localStorage.setItem(key, JSON.stringify(data));
     } catch (error) {
       console.error('[OVM Storage] Fehler beim Speichern:', error);
@@ -101,19 +115,82 @@ class LocalStorageProvider {
 
   /**
    * Löscht gespeicherte Antworten
+   * @param {string} userSlug
    * @param {string} objectId
    * @returns {Promise<void>}
    */
-  async clear(objectId) {
+  async clear(userSlug, objectId) {
     try {
       if (typeof window === 'undefined' || !window.localStorage) {
         return;
       }
 
-      const key = this.getStorageKey(objectId);
+      const key = this.getStorageKey(userSlug, objectId);
       localStorage.removeItem(key);
     } catch (error) {
       console.error('[OVM Storage] Fehler beim Löschen:', error);
+    }
+  }
+
+  /**
+   * Liste alle Legacy-Keys (alte Version ohne User-Scope)
+   * @returns {Promise<string[]>}
+   */
+  async listLegacyKeys() {
+    try {
+      if (typeof window === 'undefined' || !window.localStorage) {
+        return [];
+      }
+
+      const legacyPattern = `immobilien-app:ovm:${SCHEMA_VERSION}:`;
+      const keys = [];
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(legacyPattern)) {
+          keys.push(key);
+        }
+      }
+
+      return keys;
+    } catch (error) {
+      console.error('[OVM Storage] Fehler beim Listen von Legacy-Keys:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Migriert einen Legacy-Key zu neuem User-Scope
+   * @param {string} legacyKey
+   * @param {string} userSlug
+   * @returns {Promise<void>}
+   */
+  async migrate(legacyKey, userSlug) {
+    try {
+      if (typeof window === 'undefined' || !window.localStorage) {
+        return;
+      }
+
+      // Lade alte Daten
+      const raw = localStorage.getItem(legacyKey);
+      if (!raw) return;
+
+      const data = JSON.parse(raw);
+      
+      // Extrahiere objectId aus Legacy-Key
+      const objectId = legacyKey.split(':').pop();
+      if (!objectId) return;
+
+      // Speichere unter neuem Key
+      const newKey = this.getStorageKey(userSlug, objectId);
+      localStorage.setItem(newKey, raw);
+
+      // Lösche alten Key
+      localStorage.removeItem(legacyKey);
+
+      console.log(`[OVM Storage] Migriert: ${legacyKey} → ${newKey}`);
+    } catch (error) {
+      console.error('[OVM Storage] Fehler bei Migration:', error);
     }
   }
 }
@@ -130,15 +207,16 @@ class RemoteStorageProvider {
 
   /**
    * Lädt Antworten vom Server
+   * @param {string} userSlug
    * @param {string} objectId
    * @returns {Promise<OvmAnswerData | null>}
    */
-  async load(objectId) {
+  async load(userSlug, objectId) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
-      const response = await fetch(`${this.apiBaseUrl}/${objectId}`, {
+      const response = await fetch(`${this.apiBaseUrl}/${userSlug}/${objectId}`, {
         signal: controller.signal,
       });
 
@@ -156,22 +234,23 @@ class RemoteStorageProvider {
       return data;
     } catch (error) {
       console.warn('[OVM Storage] Remote-Load fehlgeschlagen, versuche LocalStorage:', error);
-      return this.localFallback.load(objectId);
+      return this.localFallback.load(userSlug, objectId);
     }
   }
 
   /**
    * Speichert Antworten auf Server (mit LocalStorage Fallback)
+   * @param {string} userSlug
    * @param {string} objectId
    * @param {OvmAnswerData} data
    * @returns {Promise<void>}
    */
-  async save(objectId, data) {
+  async save(userSlug, objectId, data) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
-      const response = await fetch(`${this.apiBaseUrl}/${objectId}`, {
+      const response = await fetch(`${this.apiBaseUrl}/${userSlug}/${objectId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -185,29 +264,48 @@ class RemoteStorageProvider {
       }
 
       // Zusätzlich lokal speichern als Backup
-      await this.localFallback.save(objectId, data);
+      await this.localFallback.save(userSlug, objectId, data);
     } catch (error) {
       console.warn('[OVM Storage] Remote-Save fehlgeschlagen, speichere lokal:', error);
-      await this.localFallback.save(objectId, data);
+      await this.localFallback.save(userSlug, objectId, data);
       throw new Error('Remote-Speicherung fehlgeschlagen (lokal gesichert)');
     }
   }
 
   /**
    * Löscht Antworten vom Server und lokal
+   * @param {string} userSlug
    * @param {string} objectId
    * @returns {Promise<void>}
    */
-  async clear(objectId) {
+  async clear(userSlug, objectId) {
     try {
-      await fetch(`${this.apiBaseUrl}/${objectId}`, {
+      await fetch(`${this.apiBaseUrl}/${userSlug}/${objectId}`, {
         method: 'DELETE',
       });
     } catch (error) {
       console.warn('[OVM Storage] Remote-Clear fehlgeschlagen:', error);
     }
 
-    await this.localFallback.clear(objectId);
+    await this.localFallback.clear(userSlug, objectId);
+  }
+
+  /**
+   * Liste alle Legacy-Keys (delegiert an LocalStorage)
+   * @returns {Promise<string[]>}
+   */
+  async listLegacyKeys() {
+    return this.localFallback.listLegacyKeys();
+  }
+
+  /**
+   * Migriert einen Legacy-Key (delegiert an LocalStorage)
+   * @param {string} legacyKey
+   * @param {string} userSlug
+   * @returns {Promise<void>}
+   */
+  async migrate(legacyKey, userSlug) {
+    return this.localFallback.migrate(legacyKey, userSlug);
   }
 }
 
