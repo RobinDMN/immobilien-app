@@ -15,25 +15,13 @@ import ovmChecklisteTemplate from '../data/mietspiegel_checkliste_magdeburg_2024
 const EXCLUDED_BASE_FIELD_IDS = ['OVM-1', 'OVM-2', 'OVM-3', 'OVM-4'];
 
 /**
- * Normalisiert eine Adresse für konsistentes Matching
- * @param {string} address - Straße + Hausnummer
- * @param {string} plz - Postleitzahl
- * @returns {string} Normalisierte Adresse (lowercase, ohne Spaces, Straße→Str.)
+ * Normalisiert Straßenname für String-Matching (case-insensitiv, trim)
+ * @param {string} strasse - Straße + Hausnummer
+ * @returns {string} Normalisierter String
  */
-function normalizeAddress(address, plz) {
-  if (!address || !plz) return '';
-  
-  // Normalisiere PLZ: Entferne ".0" am Ende (z.B. "39288.0" → "39288")
-  const normalizedPlz = plz.toString().replace('.0', '').trim();
-  
-  return address
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, ' ') // Multiple Spaces → Single Space
-    .replace(/straße/g, 'str') // Straße → str
-    .replace(/strasse/g, 'str') // Strasse → str
-    .replace(/\./g, '') // Punkte entfernen für konsistentes Matching
-    + '|' + normalizedPlz;
+function normalizeStrasse(strasse) {
+  if (!strasse) return '';
+  return strasse.toLowerCase().trim();
 }
 
 /**
@@ -61,19 +49,21 @@ function formatRentPerSqm(value) {
 }
 
 /**
- * Lädt Zusatzdaten (Mieten, Energieklasse, Einheiten, Baujahr, Denkmalschutz)
- * @returns {Promise<Array<{name: string, plz: string, vermietbare_flaeche_qm?: number, wohneinheiten?: number, gewerbeeinheiten?: number, stellplaetze?: number, grundmiete?: string, durchschnitt_miete_qm?: string, energieklasse?: string|null, energietraeger?: string|null, baujahr?: number|null, denkmalschutz?: string|null}>>}
+ * Lädt Objekt-Infos aus objekt_infos_geordnet.json (1:1 Daten ohne Transformation)
+ * @returns {Promise<Array>}
  */
-async function loadZusatzdaten() {
+async function loadObjektInfos() {
   try {
-    const response = await fetch('/data/objekt_zusatzdaten_magdeburg_full.json');
+    const response = await fetch('/data/objekt_infos_geordnet.json');
     if (!response.ok) {
-      console.warn('Zusatzdaten konnten nicht geladen werden:', response.status);
+      console.warn('[OVM] Objekt-Infos konnten nicht geladen werden:', response.status);
       return [];
     }
-    return await response.json();
+    const data = await response.json();
+    console.log('[OVM] Objekt-Infos geladen:', data.length, 'Einträge');
+    return data;
   } catch (error) {
-    console.warn('Fehler beim Laden der Zusatzdaten:', error);
+    console.warn('[OVM] Fehler beim Laden der Objekt-Infos:', error);
     return [];
   }
 }
@@ -104,43 +94,30 @@ function filterBaseFields(checklist) {
  * @returns {Promise<import('../types/ovm.js').PropertyObject[]>}
  */
 export async function loadMagdeburgObjects() {
-  // Lade Zusatzdaten parallel
-  const zusatzdaten = await loadZusatzdaten();
+  // Lade Objekt-Infos
+  const objektInfos = await loadObjektInfos();
   
-  // Erstelle Lookup-Map: normalisierte Adresse → Zusatzdaten
-  const zusatzdatenMap = new Map();
-  zusatzdaten.forEach(zd => {
-    const key = normalizeAddress(zd.name, zd.plz);
+  // Erstelle Lookup-Map: normalisierte Straße → Objekt-Info
+  const objektInfosMap = new Map();
+  objektInfos.forEach(info => {
+    const key = normalizeStrasse(info.strasse);
     if (key) {
-      zusatzdatenMap.set(key, zd);
+      objektInfosMap.set(key, info);
     }
   });
   
-  console.log('[OVM] Zusatzdaten geladen:', zusatzdaten.length, 'Einträge');
-  console.log('[OVM] Map Keys (erste 5):', Array.from(zusatzdatenMap.keys()).slice(0, 5));
+  console.log('[OVM] Objekt-Infos Map Keys (erste 5):', Array.from(objektInfosMap.keys()).slice(0, 5));
   
   // Simuliere async (für zukünftige API-Anbindung)
   return new Promise((resolve) => {
     setTimeout(() => {
       let matchCount = 0;
       const objects = objekteData.map((obj) => {
-        // Normalisiere Adresse des Objekts für Matching
-        // Extrahiere PLZ aus adresse
-        // Format kann sein: "39108 Magdeburg" oder "Straße Nummer, PLZ Ort"
-        let plz = '';
-        if (obj.adresse) {
-          // Versuche zuerst Split by Komma (falls Format "Straße, PLZ Ort")
-          const adressParts = obj.adresse.split(',');
-          if (adressParts.length > 1) {
-            plz = adressParts[1].trim().split(' ')[0];
-          } else {
-            // Falls kein Komma: Nimm erstes Wort (Format "PLZ Ort")
-            plz = obj.adresse.trim().split(' ')[0];
-          }
-        }
+        // Normalisiere Straßenname für Matching
+        const objectKey = normalizeStrasse(obj.name);
+        const info = objektInfosMap.get(objectKey);
 
-        const objectKey = normalizeAddress(obj.name, plz);
-        const zusatz = zusatzdatenMap.get(objectKey);        if (zusatz) {
+        if (info) {
           matchCount++;
           console.log('[OVM] ✓ Match:', obj.name, '→', objectKey);
         } else {
@@ -155,29 +132,25 @@ export async function loadMagdeburgObjects() {
             : deepCopyOvmChecklist()
         };
         
-        // Merge Zusatzdaten falls vorhanden
-        if (zusatz) {
-          console.log('[OVM] Merge für', obj.name, '→', JSON.stringify({
-            flaeche: zusatz.vermietbare_flaeche_qm,
-            we: zusatz.wohneinheiten,
-            ge: zusatz.gewerbeeinheiten,
-            stellplaetze: zusatz.stellplaetze,
-            grundmiete: zusatz.grundmiete,
-            durchschnitt_miete_qm: zusatz.durchschnitt_miete_qm
-          }));
-          
+        // Merge Objekt-Infos falls vorhanden (1:1, keine Transformationen)
+        if (info) {
           return {
             ...baseObject,
-            vermietbare_flaeche_qm: zusatz.vermietbare_flaeche_qm,
-            wohneinheiten: zusatz.wohneinheiten,
-            gewerbeeinheiten: zusatz.gewerbeeinheiten,
-            stellplaetze: zusatz.stellplaetze,
-            grundmiete: formatCurrency(zusatz.grundmiete),
-            durchschnitt_miete_qm: formatRentPerSqm(zusatz.durchschnitt_miete_qm),
-            energieklasse: zusatz.energieklasse || null,
-            energietraeger: zusatz.energietraeger || null,
-            baujahr: zusatz.baujahr,
-            denkmalschutz: zusatz.denkmalschutz || null
+            // Alle Felder 1:1 aus JSON übernehmen
+            qm_flaeche: info.qm_flaeche,
+            leerstand_qm: info.leerstand_qm,
+            wohneinheiten: info.wohneinheiten,
+            gewerbeeinheiten: info.gewerbeeinheiten,
+            stellplaetze: info.stellplaetze,
+            grundmiete: info.grundmiete,
+            durchschnitt_miete_qm: info.durchschnitt_miete_qm,
+            baujahr: info.baujahr,
+            denkmalschutz: info.denkmalschutz,
+            energieeffizienz: info.energieeffizienz,
+            energietraeger: info.energietraeger,
+            baujahr_waermeerzeuger: info.baujahr_waermeerzeuger,
+            energieeffizienzklasse: info.energieeffizienzklasse,
+            bemerkung: info.bemerkung
           };
         }
         
