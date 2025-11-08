@@ -23,14 +23,17 @@ const EXCLUDED_BASE_FIELD_IDS = ['OVM-1', 'OVM-2', 'OVM-3', 'OVM-4'];
 function normalizeAddress(address, plz) {
   if (!address || !plz) return '';
   
+  // Normalisiere PLZ: Entferne ".0" am Ende (z.B. "39288.0" → "39288")
+  const normalizedPlz = plz.toString().replace('.0', '').trim();
+  
   return address
     .toLowerCase()
     .trim()
     .replace(/\s+/g, ' ') // Multiple Spaces → Single Space
-    .replace(/straße/g, 'str.') // Straße → Str.
-    .replace(/strasse/g, 'str.') // Strasse → Str.
+    .replace(/straße/g, 'str') // Straße → str
+    .replace(/strasse/g, 'str') // Strasse → str
     .replace(/\./g, '') // Punkte entfernen für konsistentes Matching
-    + '|' + plz.trim();
+    + '|' + normalizedPlz;
 }
 
 /**
