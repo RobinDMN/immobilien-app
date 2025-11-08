@@ -17,9 +17,10 @@ import './OvmChecklist.css';
  * @param {import('../types/ovm.js').OvmItem[]} props.checklist - Die OVM-Checkliste
  * @param {(updatedChecklist: import('../types/ovm.js').OvmItem[]) => void} props.onChange - Callback bei Änderungen
  */
-export default function OvmChecklist({ objectId, checklist, onChange }) {
+export default function OvmChecklist({ object, onUpdate, initialState = {} }) {
   const { userSlug } = useUser();
-  const [items, setItems] = useState(checklist);
+  const [items, setItems] = useState([]);
+  
   /** @type {[Record<string, string>, Function]} */
   const [validationErrors, setValidationErrors] = useState({});
   /** @type {[Set<string>, Function]} */
@@ -28,26 +29,65 @@ export default function OvmChecklist({ objectId, checklist, onChange }) {
   // Storage Provider & Debounced Save
   const storageProvider = getStorageProvider();
   const { save: debouncedSave, status: saveStatus, error: saveError } = useDebouncedSave(
-    async (updatedItems) => {
-      if (!userSlug) return; // Skip wenn kein User
-      const answerData = createAnswerData(objectId, updatedItems);
-      await storageProvider.save(userSlug, objectId, answerData);
+    async (answers) => {
+      if (!userSlug || !object?.id) return;
+      await storageProvider.save(userSlug, object.id, answers);
+      onUpdate(object.id, answers); // Inform parent about the update
     },
     500
   );
 
+  // Merge initial state with checklist definition when component mounts or props change
   useEffect(() => {
-    setItems(checklist);
-  }, [checklist]);
+    if (object?.ovm_checkliste) {
+      const merged = mergeAnswers(object.ovm_checkliste, initialState);
+      setItems(merged);
+    }
+  }, [object, initialState]);
 
   /**
-   * Hilfsfunction: Update Items und trigger Save
-   * @param {import('../types/ovm.js').OvmItem[]} updatedItems
+   * Hilfsfunktion: Erstellt neue Antwortdaten und löst die Speicherung aus.
+   * @param {import('../types/ovm.js').OvmItem[]} updatedItems 
    */
-  const updateItems = (updatedItems) => {
+  const triggerSave = (updatedItems) => {
+    const answerData = createAnswerData(object.id, updatedItems);
+    debouncedSave(answerData);
+  };
+  
+  /**
+   * Handler für Radio-Button Änderungen
+   * @param {string} itemId
+   * @param {"Ja" | "Nein" | "nicht gesehen"} value
+   */
+  const handleChoiceChange = (itemId, value) => {
+    const updatedItems = items.map((item) => {
+      if (item.id === itemId && item.antworttyp === 'wahl') {
+        return { ...item, antwort: value };
+      }
+      return item;
+    });
     setItems(updatedItems);
-    onChange(updatedItems);
-    debouncedSave(updatedItems);
+    triggerSave(updatedItems);
+  };
+
+  /**
+   * Handler für Input-Feld Änderungen
+   * @param {string} itemId
+   * @param {string | number} value
+   */
+  const handleInputChange = (itemId, value) => {
+    const updatedItems = items.map((item) => {
+      if (item.id === itemId && item.antworttyp === 'eingabe') {
+        let parsedValue = value;
+        if (item.format === 'number' && value !== '') {
+          parsedValue = Number(value);
+        }
+        return { ...item, wert: parsedValue === '' ? null : parsedValue };
+      }
+      return item;
+    });
+    setItems(updatedItems);
+    triggerSave(updatedItems);
   };
 
   /**
@@ -66,60 +106,9 @@ export default function OvmChecklist({ objectId, checklist, onChange }) {
     });
   };
 
-  /**
-   * Handler für Radio-Button Änderungen
-   * @param {string} itemId
-   * @param {"Ja" | "Nein" | "nicht gesehen"} value
-   */
-  const handleChoiceChange = (itemId, value) => {
-    const updatedItems = items.map((item) => {
-      if (item.id === itemId && item.antworttyp === 'wahl') {
-        return { ...item, antwort: value };
-      }
-      return item;
-    });
-
-    updateItems(updatedItems);
-  };
-
-  /**
-   * Handler für Input-Feld Änderungen
-   * @param {string} itemId
-   * @param {string | number} value
-   */
-  const handleInputChange = (itemId, value) => {
-    /** @type {Record<string, string> | null} */
-    let validationError = null;
-
-    const updatedItems = items.map((item) => {
-      if (item.id === itemId && item.antworttyp === 'eingabe') {
-        let parsedValue = value;
-
-        // Konvertiere zu Number wenn format === 'number'
-        if (item.format === 'number' && value !== '') {
-          parsedValue = Number(value);
-          // Hinweis: Wohnflächen-Validierung wurde entfernt, da OVM-1 (Wohnfläche)
-          // jetzt in Objektstammdaten angezeigt wird und nicht mehr in der Checkliste
-        }
-
-        return { ...item, wert: parsedValue === '' ? null : parsedValue };
-      }
-      return item;
-    });
-
-    // Validierungsfehler aktualisieren
-    if (validationError) {
-      setValidationErrors((prev) => ({ ...prev, ...validationError }));
-    } else {
-      setValidationErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[itemId];
-        return newErrors;
-      });
-    }
-
-    updateItems(updatedItems);
-  };
+  if (!object || !items.length) {
+    return <div>Checkliste wird geladen...</div>;
+  }
 
   const groups = groupOvmItemsByBereich(items);
 

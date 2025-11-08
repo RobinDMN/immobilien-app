@@ -1,827 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { loadMagdeburgObjects } from './lib/ovm.js';
 import { getStorageProvider, mergeAnswers } from './lib/storage/ovmStorage.js';
-import OvmChecklist from './components/OvmChecklist.jsx';
 import { UserProvider, useUser } from './contexts/UserContext.jsx';
 import LoginModal from './components/LoginModal.jsx';
+import ObjectList from './components/ObjectList.jsx';
+import ObjectDetail from './components/ObjectDetail.jsx';
 
-// ============================================================================
-// IMMOBILIEN-DATEN MAGDEBURG (wird durch loadMagdeburgObjects ersetzt)
-// ============================================================================
-const MOCK_OBJEKTE = [
-  {
-    "id": "1",
-    "name": "August-Bebel-Str. 32",
-    "adresse": "39288 Burg",
-    "grundmiete": "2.544,66 €",
-    "durchschnittsmiete": "6,20 €",
-    "zielmiete": "6,90 €",
-    "baujahr": null,
-    "denkmalschutz": null,
-    "modernisierung": null,
-    "waermeerzeuger": null,
-    "energietraeger": null,
-    "energieklasse": null,
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "1-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "1-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "2",
-    "name": "Annastr. 14",
-    "adresse": "39108 Magdeburg",
-    "grundmiete": "9.514,41 €",
-    "durchschnittsmiete": "7,37 €",
-    "zielmiete": "7,85 €",
-    "baujahr": "1898",
-    "denkmalschutz": "Ja",
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "HH = G, VH = E",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "2-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "2-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "3",
-    "name": "Arndtstr. 42",
-    "adresse": "39108 Magdeburg",
-    "grundmiete": "3.993,00 €",
-    "durchschnittsmiete": "6,32 €",
-    "zielmiete": "7,85 €",
-    "baujahr": "1902",
-    "denkmalschutz": "Nein",
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "3-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "3-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "4",
-    "name": "Fichtestr. 17",
-    "adresse": "39112 Magdeburg",
-    "grundmiete": "2.245,83 €",
-    "durchschnittsmiete": "6,95 €",
-    "zielmiete": "7,50 €",
-    "baujahr": "1998",
-    "denkmalschutz": "Nein",
-    "modernisierung": "1998",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E, B",
-    "stellplatzmiete": "105,00 €",
-    "checkliste": [
-      { "id": "4-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "4-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "5",
-    "name": "Fichtestr. 17a",
-    "adresse": "39112 Magdeburg",
-    "grundmiete": "4.582,64 €",
-    "durchschnittsmiete": "6,83 €",
-    "zielmiete": "7,50 €",
-    "baujahr": "1998",
-    "denkmalschutz": "Nein",
-    "modernisierung": "1998",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E, B",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "5-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "5-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "6",
-    "name": "Gartenstr. 26",
-    "adresse": "39114 Magdeburg",
-    "grundmiete": "4.558,26 €",
-    "durchschnittsmiete": "6,65 €",
-    "zielmiete": "8,00 €",
-    "baujahr": "1995",
-    "denkmalschutz": null,
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "B",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "6-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "6-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "7",
-    "name": "Gartenstr. 27",
-    "adresse": "39114 Magdeburg",
-    "grundmiete": "4.561,07 €",
-    "durchschnittsmiete": "6,92 €",
-    "zielmiete": "8,00 €",
-    "baujahr": "1995",
-    "denkmalschutz": null,
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "B",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "7-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "7-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "8",
-    "name": "Gartenstr. 28",
-    "adresse": "39114 Magdeburg",
-    "grundmiete": "4.583,85 €",
-    "durchschnittsmiete": "7,02 €",
-    "zielmiete": "8,00 €",
-    "baujahr": "1995",
-    "denkmalschutz": null,
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "B",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "8-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "8-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "9",
-    "name": "Gartenstr. 29",
-    "adresse": "39114 Magdeburg",
-    "grundmiete": "4.120,89 €",
-    "durchschnittsmiete": "7,05 €",
-    "zielmiete": "8,00 €",
-    "baujahr": "1995",
-    "denkmalschutz": null,
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "B",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "9-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "9-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "10",
-    "name": "Gartenstr. 29a",
-    "adresse": "39114 Magdeburg",
-    "grundmiete": "4.724,51 €",
-    "durchschnittsmiete": "7,04 €",
-    "zielmiete": "8,00 €",
-    "baujahr": "1995",
-    "denkmalschutz": null,
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "B",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "10-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "10-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "11",
-    "name": "Große Diesdorfer Str. 50a",
-    "adresse": "39110 Magdeburg",
-    "grundmiete": "7.264,65 €",
-    "durchschnittsmiete": "7,07 €",
-    "zielmiete": "7,50 €",
-    "baujahr": "1904",
-    "denkmalschutz": "Nein",
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "11-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "11-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "12",
-    "name": "Haeckelstraße 7",
-    "adresse": "39104 Magdeburg",
-    "grundmiete": "5.496,85 €",
-    "durchschnittsmiete": "6,77 €",
-    "zielmiete": "8,30 €",
-    "baujahr": "1900",
-    "denkmalschutz": "Ja",
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "12-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "12-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "13",
-    "name": "Halberstädter Str. 136",
-    "adresse": "39112 Magdeburg",
-    "grundmiete": "4.998,00 €",
-    "durchschnittsmiete": "6,70 €",
-    "zielmiete": "7,50 €",
-    "baujahr": "1890",
-    "denkmalschutz": "Ja",
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "13-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "13-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "14",
-    "name": "Heidestr. 6",
-    "adresse": "39112 Magdeburg",
-    "grundmiete": "12.053,84 €",
-    "durchschnittsmiete": "5,69 €",
-    "zielmiete": "7,50 €",
-    "baujahr": "1890",
-    "denkmalschutz": "Ja",
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "14-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "14-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "15",
-    "name": "Leibnizstr. 20",
-    "adresse": "39104 Magdeburg",
-    "grundmiete": "4.783,84 €",
-    "durchschnittsmiete": "6,27 €",
-    "zielmiete": "8,00 €",
-    "baujahr": "1900",
-    "denkmalschutz": "Ja",
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "HH = H, VH = E",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "15-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "15-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "16",
-    "name": "Liebknechtstraße 42",
-    "adresse": "39108 Magdeburg",
-    "grundmiete": "4.215,22 €",
-    "durchschnittsmiete": "6,81 €",
-    "zielmiete": "7,85 €",
-    "baujahr": null,
-    "denkmalschutz": null,
-    "modernisierung": null,
-    "waermeerzeuger": null,
-    "energietraeger": null,
-    "energieklasse": null,
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "16-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "16-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "17",
-    "name": "Mittelstr. 26",
-    "adresse": "39114 Magdeburg",
-    "grundmiete": "3.938,74 €",
-    "durchschnittsmiete": "6,81 €",
-    "zielmiete": "8,00 €",
-    "baujahr": "1995",
-    "denkmalschutz": null,
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "C",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "17-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "17-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "18",
-    "name": "Mittelstr. 27",
-    "adresse": "39114 Magdeburg",
-    "grundmiete": "4.199,63 €",
-    "durchschnittsmiete": "7,25 €",
-    "zielmiete": "8,00 €",
-    "baujahr": "1995",
-    "denkmalschutz": null,
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "C",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "18-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "18-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "19",
-    "name": "Mittelstr. 28",
-    "adresse": "39114 Magdeburg",
-    "grundmiete": "4.237,75 €",
-    "durchschnittsmiete": "6,70 €",
-    "zielmiete": "8,00 €",
-    "baujahr": "1995",
-    "denkmalschutz": null,
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "C",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "19-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "19-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "20",
-    "name": "Moritzstraße 4",
-    "adresse": "39124 Magdeburg",
-    "grundmiete": "5.326,62 €",
-    "durchschnittsmiete": "5,83 €",
-    "zielmiete": "7,00 €",
-    "baujahr": "1995",
-    "denkmalschutz": "Ja",
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "20-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "20-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "21",
-    "name": "Neue Straße 13a",
-    "adresse": "39104 Magdeburg",
-    "grundmiete": "8.751,68 €",
-    "durchschnittsmiete": "6,07 €",
-    "zielmiete": "6,80 €",
-    "baujahr": "1893",
-    "denkmalschutz": "Ja",
-    "modernisierung": "1998",
-    "waermeerzeuger": null,
-    "energietraeger": "Heizwerk, fossil",
-    "energieklasse": "C",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "21-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "21-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "22",
-    "name": "Neue Straße 17",
-    "adresse": "39104 Magdeburg",
-    "grundmiete": "4.580,20 €",
-    "durchschnittsmiete": "6,34 €",
-    "zielmiete": "6,80 €",
-    "baujahr": "1897",
-    "denkmalschutz": null,
-    "modernisierung": "1996",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E, D",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "22-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "22-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "23",
-    "name": "Neue Straße 18",
-    "adresse": "39104 Magdeburg",
-    "grundmiete": "4.644,57 €",
-    "durchschnittsmiete": "6,24 €",
-    "zielmiete": "6,80 €",
-    "baujahr": "1997",
-    "denkmalschutz": "Nein",
-    "modernisierung": "1997",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E, C",
-    "stellplatzmiete": "75,00 €",
-    "checkliste": [
-      { "id": "23-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "23-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "24",
-    "name": "Neue Straße 18a",
-    "adresse": "39104 Magdeburg",
-    "grundmiete": "4.075,10 €",
-    "durchschnittsmiete": "6,26 €",
-    "zielmiete": "6,50 €",
-    "baujahr": "1997",
-    "denkmalschutz": "Nein",
-    "modernisierung": "1997",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E, C",
-    "stellplatzmiete": "90,00 €",
-    "checkliste": [
-      { "id": "24-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "24-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "25",
-    "name": "Neue Straße 19",
-    "adresse": "39104 Magdeburg",
-    "grundmiete": "2.680,00 €",
-    "durchschnittsmiete": "6,96 €",
-    "zielmiete": "7,40 €",
-    "baujahr": "1997",
-    "denkmalschutz": "Nein",
-    "modernisierung": "1997",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E, D",
-    "stellplatzmiete": "25,00 €",
-    "checkliste": [
-      { "id": "25-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "25-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "26",
-    "name": "Neue Straße 19a",
-    "adresse": "39104 Magdeburg",
-    "grundmiete": "4.118,51 €",
-    "durchschnittsmiete": "6,33 €",
-    "zielmiete": "7,30 €",
-    "baujahr": "1997",
-    "denkmalschutz": "Nein",
-    "modernisierung": "1997",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E, D",
-    "stellplatzmiete": "140,00 €",
-    "checkliste": [
-      { "id": "26-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "26-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "27",
-    "name": "Schillerstr. 32",
-    "adresse": "39108 Magdeburg",
-    "grundmiete": "4.065,85 €",
-    "durchschnittsmiete": "6,45 €",
-    "zielmiete": "7,85 €",
-    "baujahr": "1911",
-    "denkmalschutz": "Ja",
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "27-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "27-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "28",
-    "name": "Schillerstr. 35",
-    "adresse": "39108 Magdeburg",
-    "grundmiete": "3.319,00 €",
-    "durchschnittsmiete": "6,72 €",
-    "zielmiete": "7,85 €",
-    "baujahr": "1915",
-    "denkmalschutz": null,
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "F",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "28-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "28-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "29",
-    "name": "Schönebecker Straße 48",
-    "adresse": "39104 Magdeburg",
-    "grundmiete": "5.845,80 €",
-    "durchschnittsmiete": "7,67 €",
-    "zielmiete": "8,40 €",
-    "baujahr": "1920",
-    "denkmalschutz": "Nein",
-    "modernisierung": "2000",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "29-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "29-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "30",
-    "name": "Schönebecker Straße 49",
-    "adresse": "39104 Magdeburg",
-    "grundmiete": "4.199,00 €",
-    "durchschnittsmiete": "7,29 €",
-    "zielmiete": "8,40 €",
-    "baujahr": "1920",
-    "denkmalschutz": "Nein",
-    "modernisierung": "2000",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "D",
-    "stellplatzmiete": "235,00 €",
-    "checkliste": [
-      { "id": "30-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "30-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "31",
-    "name": "Schönebecker Straße 50",
-    "adresse": "39104 Magdeburg",
-    "grundmiete": "7.533,06 €",
-    "durchschnittsmiete": "5,62 €",
-    "zielmiete": "7,00 €",
-    "baujahr": "1990",
-    "denkmalschutz": "Ja",
-    "modernisierung": "1999",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E, E",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "31-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "31-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "32",
-    "name": "Weidenstr. 1",
-    "adresse": "39114 Magdeburg",
-    "grundmiete": "3.643,00 €",
-    "durchschnittsmiete": "7,23 €",
-    "zielmiete": "7,00 €",
-    "baujahr": "1995",
-    "denkmalschutz": null,
-    "modernisierung": "1995",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "C",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "32-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "32-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "33",
-    "name": "Weidenstr. 1a",
-    "adresse": "39114 Magdeburg",
-    "grundmiete": "2.817,74 €",
-    "durchschnittsmiete": "4,63 €",
-    "zielmiete": "7,00 €",
-    "baujahr": null,
-    "denkmalschutz": null,
-    "modernisierung": null,
-    "waermeerzeuger": null,
-    "energietraeger": null,
-    "energieklasse": null,
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "33-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "33-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "34",
-    "name": "Winckelmannstraße 1",
-    "adresse": "39108 Magdeburg",
-    "grundmiete": "3.574,57 €",
-    "durchschnittsmiete": "6,51 €",
-    "zielmiete": "7,85 €",
-    "baujahr": "1920",
-    "denkmalschutz": "Nein",
-    "modernisierung": "1998",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "34-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "34-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "35",
-    "name": "Wolfenbütteler Straße 16",
-    "adresse": "39112 Magdeburg",
-    "grundmiete": "4.806,78 €",
-    "durchschnittsmiete": "6,37 €",
-    "zielmiete": "7,50 €",
-    "baujahr": "1990",
-    "denkmalschutz": "Ja",
-    "modernisierung": "1996",
-    "waermeerzeuger": null,
-    "energietraeger": "Erdgas",
-    "energieklasse": "E, F",
-    "stellplatzmiete": null,
-    "checkliste": [
-      { "id": "35-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "35-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  },
-  {
-    "id": "36",
-    "name": "Langer Weg 51a",
-    "adresse": "39112 Magdeburg",
-    "grundmiete": null,
-    "durchschnittsmiete": null,
-    "zielmiete": null,
-    "baujahr": null,
-    "denkmalschutz": null,
-    "modernisierung": null,
-    "waermeerzeuger": null,
-    "energietraeger": null,
-    "energieklasse": null,
-    "stellplatzmiete": "300,00 €",
-    "checkliste": [
-      { "id": "36-1", "titel": "Dach prüfen", "erledigt": false },
-      { "id": "36-2", "titel": "Heizung kontrollieren", "erledigt": false }
-    ]
-  }
-];
-
-// ============================================================================
-// ALTE KOMPONENTE: Checklist (wird nicht mehr verwendet)
-// ============================================================================
-// Jetzt wird OvmChecklist aus ./components/OvmChecklist.jsx verwendet
-
-// ============================================================================
-// KOMPONENTE: ObjectDetail
-// ============================================================================
-/**
- * Zeigt die Details eines ausgewählten Objekts an.
- * @param {Object} objekt - Das aktuell ausgewählte Immobilien-Objekt
- * @param {Function} onChecklistToggle - Callback für Checklisten-Änderungen
- */
-function ObjectDetail({ objekt, onChecklistToggle }) {
-  if (!objekt) {
-    return (
-      <div className="object-detail empty">
-        <p>Bitte wähle ein Objekt aus der Liste aus.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="object-detail">
-      <div className="detail-header">
-        <h2>{objekt.name}</h2>
-        <p className="adresse">{objekt.adresse}</p>
-        
-        {/* Objektinformationen in Grid-Layout */}
-        <div className="objekt-info-grid">
-          {objekt.grundmiete && (
-            <div className="info-item">
-              <span className="info-label">Grundmiete:</span>
-              <span className="info-value">{objekt.grundmiete}</span>
-            </div>
-          )}
-          {objekt.durchschnittsmiete && (
-            <div className="info-item">
-              <span className="info-label">Ø Miete/m²:</span>
-              <span className="info-value">{objekt.durchschnittsmiete}</span>
-            </div>
-          )}
-          {objekt.zielmiete && (
-            <div className="info-item">
-              <span className="info-label">Zielmiete/m²:</span>
-              <span className="info-value">{objekt.zielmiete}</span>
-            </div>
-          )}
-          {objekt.baujahr && (
-            <div className="info-item">
-              <span className="info-label">Baujahr:</span>
-              <span className="info-value">{objekt.baujahr}</span>
-            </div>
-          )}
-          {objekt.modernisierung && (
-            <div className="info-item">
-              <span className="info-label">Modernisierung:</span>
-              <span className="info-value">{objekt.modernisierung}</span>
-            </div>
-          )}
-          {objekt.denkmalschutz && (
-            <div className="info-item">
-              <span className="info-label">Denkmalschutz:</span>
-              <span className="info-value">{objekt.denkmalschutz}</span>
-            </div>
-          )}
-          {objekt.energietraeger && (
-            <div className="info-item">
-              <span className="info-label">Energieträger:</span>
-              <span className="info-value">{objekt.energietraeger}</span>
-            </div>
-          )}
-          {objekt.energieklasse && (
-            <div className="info-item">
-              <span className="info-label">Energieklasse:</span>
-              <span className="info-value">{objekt.energieklasse}</span>
-            </div>
-          )}
-          {objekt.stellplatzmiete && (
-            <div className="info-item">
-              <span className="info-label">Stellplatzmiete:</span>
-              <span className="info-value">{objekt.stellplatzmiete}</span>
-            </div>
-          )}
-        </div>
-      </div>
-      
-      {objekt.ovm_checkliste && (
-        <OvmChecklist 
-          objectId={objekt.id}
-          checklist={objekt.ovm_checkliste} 
-          onChange={onChecklistToggle}
-        />
-      )}
-    </div>
-  );
-}
-
-// ============================================================================
-// KOMPONENTE: Sidebar
-// ============================================================================
-/**
- * Zeigt die Liste aller Objekte in der Sidebar an.
- * @param {Array} objekte - Array aller Immobilien-Objekte
- * @param {string} selectedId - ID des aktuell ausgewählten Objekts
- * @param {Function} onSelect - Callback bei Auswahl eines Objekts
- */
-function Sidebar({ objekte, selectedId, onSelect }) {
-  return (
-    <div className="sidebar">
-      <h2>Objekte</h2>
-      <ul className="objekt-liste">
-        {objekte.map((obj) => (
-          <li
-            key={obj.id}
-            className={selectedId === obj.id ? 'selected' : ''}
-            onClick={() => onSelect(obj.id)}
-          >
-            <div className="objekt-name">{obj.name}</div>
-            <div className="objekt-adresse">{obj.adresse}</div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+// Mock-Daten werden nicht mehr direkt hier verwendet, sondern in loadMagdeburgObjects gekapselt.
 
 // ============================================================================
 // KOMPONENTE: App (Root)
@@ -833,16 +20,11 @@ function Sidebar({ objekte, selectedId, onSelect }) {
 function AppContent() {
   const { currentUser, userSlug, showLogin } = useUser();
   
-  // State: Alle Objekte mit ihren Checklisten
   const [objekte, setObjekte] = useState([]);
-  
-  // State: ID des aktuell ausgewählten Objekts
-  const [selectedId, setSelectedId] = useState(null);
-
-  // State: Loading-Status
+  const [ovmData, setOvmData] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // Lade Objekte beim Start und merge gespeicherte Antworten
+  // Lade Objekte und gespeicherte Antworten beim Start
   useEffect(() => {
     if (!userSlug) {
       setLoading(false);
@@ -853,27 +35,25 @@ function AppContent() {
       setLoading(true);
       try {
         const loadedObjects = await loadMagdeburgObjects();
+        setObjekte(loadedObjects);
+
         const storageProvider = getStorageProvider();
+        const allSavedData = {};
         
-        // Lade gespeicherte Antworten für jedes Objekt und merge
-        const objectsWithSavedAnswers = await Promise.all(
+        await Promise.all(
           loadedObjects.map(async (obj) => {
-            if (!obj.ovm_checkliste) {
-              return obj;
-            }
-            
             try {
               const savedData = await storageProvider.load(userSlug, obj.id);
-              const mergedChecklist = mergeAnswers(obj.ovm_checkliste, savedData);
-              return { ...obj, ovm_checkliste: mergedChecklist };
+              if (savedData && Object.keys(savedData).length > 0) {
+                allSavedData[obj.id] = savedData;
+              }
             } catch (error) {
-              console.warn(`Fehler beim Laden für Objekt ${obj.id}:`, error);
-              return obj;
+              console.warn(`Fehler beim Laden der OVM-Daten für Objekt ${obj.id}:`, error);
             }
           })
         );
         
-        setObjekte(objectsWithSavedAnswers);
+        setOvmData(allSavedData);
         setLoading(false);
       } catch (error) {
         console.error('Fehler beim Laden der Objekte:', error);
@@ -881,30 +61,21 @@ function AppContent() {
       }
     };
     loadData();
-  }, [userSlug]); // Reload wenn sich der User ändert
-
-  // Aktuell ausgewähltes Objekt finden
-  const selectedObjekt = objekte.find(obj => obj.id === selectedId) || null;
+  }, [userSlug]);
 
   /**
    * Handler für OVM-Checklisten-Änderungen.
-   * Aktualisiert die gesamte OVM-Checkliste für ein Objekt.
+   * Wird vom OvmChecklist-Komponenten aufgerufen.
    */
-  const handleChecklistChange = (updatedChecklist) => {
-    setObjekte((prevObjekte) =>
-      prevObjekte.map((obj) => {
-        if (obj.id === selectedId) {
-          return {
-            ...obj,
-            ovm_checkliste: updatedChecklist
-          };
-        }
-        return obj;
-      })
-    );
+  const handleOvmUpdate = (objectId, updatedAnswers) => {
+    setOvmData(prevData => ({
+      ...prevData,
+      [objectId]: updatedAnswers
+    }));
+    // Die Speicherung wird durch den StorageProvider (mit Debounce) gehandhabt
   };
 
-  if (loading) {
+  if (loading && !objekte.length) {
     return (
       <div className="app">
         <div style={{ padding: '2rem', textAlign: 'center' }}>
@@ -924,30 +95,39 @@ function AppContent() {
           </button>
         </div>
       </header>
-      <div className="app-content">
-        <Sidebar
-          objekte={objekte}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-        />
-        <ObjectDetail
-          objekt={selectedObjekt}
-          onChecklistToggle={handleChecklistChange}
-        />
-      </div>
+      <main className="app-content">
+        <Routes>
+          <Route 
+            path="/" 
+            element={<ObjectList objekte={objekte} />} 
+          />
+          <Route 
+            path="/objekte/:id" 
+            element={
+              <ObjectDetail 
+                objekte={objekte} 
+                ovmData={ovmData}
+                onUpdateOvm={handleOvmUpdate}
+              />
+            } 
+          />
+        </Routes>
+      </main>
     </div>
   );
 }
 
 /**
- * App-Wrapper mit UserProvider
+ * App-Wrapper mit UserProvider und Router
  */
 function App() {
   return (
-    <UserProvider>
-      <AppContent />
-      <LoginModal />
-    </UserProvider>
+    <Router>
+      <UserProvider>
+        <AppContent />
+        <LoginModal />
+      </UserProvider>
+    </Router>
   );
 }
 
