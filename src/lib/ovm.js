@@ -125,15 +125,22 @@ export async function loadMagdeburgObjects() {
       let matchCount = 0;
       const objects = objekteData.map((obj) => {
         // Normalisiere Adresse des Objekts für Matching
-        // Extrahiere PLZ aus adresse (Format: "Straße Nummer, PLZ Ort")
-        const adressParts = obj.adresse?.split(',') || [];
-        const plzOrt = adressParts[1]?.trim() || '';
-        const plz = plzOrt.split(' ')[0]; // Erste Wort nach Komma ist PLZ
-        
+        // Extrahiere PLZ aus adresse
+        // Format kann sein: "39108 Magdeburg" oder "Straße Nummer, PLZ Ort"
+        let plz = '';
+        if (obj.adresse) {
+          // Versuche zuerst Split by Komma (falls Format "Straße, PLZ Ort")
+          const adressParts = obj.adresse.split(',');
+          if (adressParts.length > 1) {
+            plz = adressParts[1].trim().split(' ')[0];
+          } else {
+            // Falls kein Komma: Nimm erstes Wort (Format "PLZ Ort")
+            plz = obj.adresse.trim().split(' ')[0];
+          }
+        }
+
         const objectKey = normalizeAddress(obj.name, plz);
-        const zusatz = zusatzdatenMap.get(objectKey);
-        
-        if (zusatz) {
+        const zusatz = zusatzdatenMap.get(objectKey);        if (zusatz) {
           matchCount++;
           console.log('[OVM] ✓ Match:', obj.name, '→', objectKey);
         } else {
