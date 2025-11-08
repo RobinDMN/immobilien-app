@@ -167,40 +167,63 @@ export async function loadMagdeburgObjects() {
         };
         
         // Merge Objekt-Infos falls vorhanden
-        // WICHTIG: JSON-Werte sind Faktor 10 zu hoch → durch 10 teilen!
         if (info) {
-          // Rohdaten-Diagnose in Console ausgeben
+          // Rohdaten-Diagnose in Console ausgeben (VOR jeder Transformation)
           console.log('[OVM] Raw JSON für', obj.name, ':', {
             qm_flaeche: info.qm_flaeche,
             leerstand_qm: info.leerstand_qm,
-            baujahr: info.baujahr,
-            baujahr_waermeerzeuger: info.baujahr_waermeerzeuger,
-            grundmiete: info.grundmiete,
-            durchschnitt_miete_qm: info.durchschnitt_miete_qm
-          });
-          
-          // Parse & korrigiere Werte
-          const qm_flaeche_num = info.qm_flaeche != null ? info.qm_flaeche / 10 : null;
-          const leerstand_qm_num = info.leerstand_qm != null ? info.leerstand_qm / 10 : null;
-          const baujahr_num = info.baujahr != null ? Math.round(info.baujahr / 10) : null;
-          const baujahr_waermeerzeuger_num = info.baujahr_waermeerzeuger != null ? Math.round(info.baujahr_waermeerzeuger / 10) : null;
-          
-          // Grundmiete & Ø-Miete als String-Zahlen parsen
-          const grundmiete_num = parseDeNumber(info.grundmiete);
-          const durchschnitt_miete_qm_num = parseDeNumber(info.durchschnitt_miete_qm);
-          
-          return {
-            ...baseObject,
-            // Normierte Zahlen-Werte (bereits korrigiert)
-            qm_flaeche_num,
-            leerstand_qm_num,
             wohneinheiten: info.wohneinheiten,
             gewerbeeinheiten: info.gewerbeeinheiten,
             stellplaetze: info.stellplaetze,
+            grundmiete: info.grundmiete,
+            durchschnitt_miete_qm: info.durchschnitt_miete_qm,
+            baujahr: info.baujahr,
+            baujahr_waermeerzeuger: info.baujahr_waermeerzeuger
+          });
+          
+          // KORREKTES Parsing (nur einmal, hier im Loader):
+          // Flächenwerte: Integer / 10 (z.B. 17043 → 1704,3)
+          const qm_flaeche_num = info.qm_flaeche != null ? info.qm_flaeche / 10 : null;
+          const leerstand_qm_num = info.leerstand_qm != null ? info.leerstand_qm / 10 : null;
+          
+          // Einheiten: Integer / 10 (z.B. 340 → 34)
+          const wohneinheiten_int = info.wohneinheiten != null ? Math.round(info.wohneinheiten / 10) : null;
+          const gewerbeeinheiten_int = info.gewerbeeinheiten != null ? Math.round(info.gewerbeeinheiten / 10) : null;
+          const stellplaetze_int = info.stellplaetze != null ? Math.round(info.stellplaetze / 10) : null;
+          
+          // Jahre: Integer / 10 (z.B. 18980 → 1898, 19950 → 1995)
+          const baujahr_int = info.baujahr != null ? Math.round(info.baujahr / 10) : null;
+          const baujahr_waermeerzeuger_int = info.baujahr_waermeerzeuger != null ? Math.round(info.baujahr_waermeerzeuger / 10) : null;
+          
+          // Währung/Miete: String mit US-Dezimalpunkt → parsen (z.B. "9514.41" → 9514.41)
+          // KEINE Division! Werte sind bereits korrekt, nur Punkt→Komma
+          const grundmiete_num = parseDeNumber(info.grundmiete);
+          const durchschnitt_miete_qm_num = parseDeNumber(info.durchschnitt_miete_qm);
+          
+          console.log('[OVM] Parsed für', obj.name, ':', {
+            qm_flaeche_num,
+            leerstand_qm_num,
+            wohneinheiten_int,
+            gewerbeeinheiten_int,
+            stellplaetze_int,
             grundmiete_num,
             durchschnitt_miete_qm_num,
-            baujahr_num,
-            baujahr_waermeerzeuger_num,
+            baujahr_int,
+            baujahr_waermeerzeuger_int
+          });
+          
+          return {
+            ...baseObject,
+            // Normierte Zahlen-Werte (einmalig geparst, eingefroren)
+            qm_flaeche_num,
+            leerstand_qm_num,
+            wohneinheiten_int,
+            gewerbeeinheiten_int,
+            stellplaetze_int,
+            grundmiete_num,
+            durchschnitt_miete_qm_num,
+            baujahr_int,
+            baujahr_waermeerzeuger_int,
             // Text-Felder unverändert
             denkmalschutz: info.denkmalschutz,
             energieeffizienz: info.energieeffizienz,

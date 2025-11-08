@@ -125,27 +125,27 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
             </div>
           )}
           
-          {/* 3. wohneinheiten */}
-          {object.wohneinheiten != null && (
+          {/* 3. wohneinheiten - Integer (keine Dezimalstellen) */}
+          {object.wohneinheiten_int != null && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Wohneinheiten:</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.wohneinheiten}</span>
+              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.wohneinheiten_int}</span>
             </div>
           )}
           
-          {/* 4. gewerbeeinheiten */}
-          {object.gewerbeeinheiten != null && (
+          {/* 4. gewerbeeinheiten - Integer (keine Dezimalstellen) */}
+          {object.gewerbeeinheiten_int != null && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Gewerbeeinheiten:</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.gewerbeeinheiten}</span>
+              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.gewerbeeinheiten_int}</span>
             </div>
           )}
           
-          {/* 5. stellplaetze */}
-          {object.stellplaetze != null && (
+          {/* 5. stellplaetze - Integer (keine Dezimalstellen) */}
+          {object.stellplaetze_int != null && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Stellplätze:</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.stellplaetze}</span>
+              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.stellplaetze_int}</span>
             </div>
           )}
           
@@ -169,11 +169,11 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
             </div>
           )}
           
-          {/* 8. baujahr - Integer */}
-          {object.baujahr_num != null && (
+          {/* 8. baujahr - Integer (vierstellig) */}
+          {object.baujahr_int != null && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Baujahr:</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.baujahr_num}</span>
+              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.baujahr_int}</span>
             </div>
           )}
           
@@ -201,11 +201,11 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
             </div>
           )}
           
-          {/* 12. baujahr_waermeerzeuger - Integer */}
-          {object.baujahr_waermeerzeuger_num != null && (
+          {/* 12. baujahr_waermeerzeuger - Integer (vierstellig) */}
+          {object.baujahr_waermeerzeuger_int != null && (
             <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
               <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Baujahr Wärmeerzeuger:</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.baujahr_waermeerzeuger_num}</span>
+              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.baujahr_waermeerzeuger_int}</span>
             </div>
           )}
           
@@ -226,10 +226,10 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
           )}
           
           {/* Fallback wenn keine Daten vorhanden */}
-          {!object.qm_flaeche_num && !object.leerstand_qm_num && !object.wohneinheiten && 
-           !object.gewerbeeinheiten && !object.stellplaetze && !object.grundmiete_num &&
-           !object.durchschnitt_miete_qm_num && !object.baujahr_num && !object.denkmalschutz &&
-           !object.energieeffizienz && !object.energietraeger && !object.baujahr_waermeerzeuger_num &&
+          {!object.qm_flaeche_num && !object.leerstand_qm_num && !object.wohneinheiten_int && 
+           !object.gewerbeeinheiten_int && !object.stellplaetze_int && !object.grundmiete_num &&
+           !object.durchschnitt_miete_qm_num && !object.baujahr_int && !object.denkmalschutz &&
+           !object.energieeffizienz && !object.energietraeger && !object.baujahr_waermeerzeuger_int &&
            !object.energieeffizienzklasse && !object.bemerkung && (
             <div style={{ padding: '1rem', textAlign: 'center', color: '#95a5a6', fontStyle: 'italic' }}>
               Für dieses Objekt sind keine Detailinformationen verfügbar
