@@ -89,13 +89,29 @@ export async function loadMagdeburgObjects() {
     }
   });
   
+  console.log('[OVM] Zusatzdaten geladen:', zusatzdaten.length, 'Einträge');
+  console.log('[OVM] Map Keys (erste 5):', Array.from(zusatzdatenMap.keys()).slice(0, 5));
+  
   // Simuliere async (für zukünftige API-Anbindung)
   return new Promise((resolve) => {
     setTimeout(() => {
+      let matchCount = 0;
       const objects = objekteData.map((obj) => {
         // Normalisiere Adresse des Objekts für Matching
-        const objectKey = normalizeAddress(obj.name, obj.adresse?.split(',').pop()?.trim() || '');
+        // Extrahiere PLZ aus adresse (Format: "Straße Nummer, PLZ Ort")
+        const adressParts = obj.adresse?.split(',') || [];
+        const plzOrt = adressParts[1]?.trim() || '';
+        const plz = plzOrt.split(' ')[0]; // Erste Wort nach Komma ist PLZ
+        
+        const objectKey = normalizeAddress(obj.name, plz);
         const zusatz = zusatzdatenMap.get(objectKey);
+        
+        if (zusatz) {
+          matchCount++;
+          console.log('[OVM] ✓ Match:', obj.name, '→', objectKey);
+        } else {
+          console.log('[OVM] ✗ Kein Match:', obj.name, '→', objectKey);
+        }
         
         // @ts-ignore - Property wird dynamisch hinzugefügt
         const baseObject = {
@@ -123,6 +139,7 @@ export async function loadMagdeburgObjects() {
         return baseObject;
       });
       
+      console.log('[OVM] Matching abgeschlossen:', matchCount, '/', objekteData.length, 'Objekte');
       resolve(objects);
     }, 0);
   });
