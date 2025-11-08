@@ -150,32 +150,26 @@ export async function loadMagdeburgObjects() {
         
         // Merge Zusatzdaten falls vorhanden
         if (zusatz) {
-          // Konvertiere Fläche: Werte in JSON sind ohne Komma (z.B. 54111 = 541.11 m²)
-          const flaeche = zusatz.vermietbare_flaeche_qm != null ? zusatz.vermietbare_flaeche_qm / 100 : null;
-          
-          // Konvertiere WE/GE: Werte sind * 10 (z.B. 340 = 34 WE)
-          const we = zusatz.wohneinheiten != null ? zusatz.wohneinheiten / 10 : null;
-          const ge = zusatz.gewerbeeinheiten != null ? zusatz.gewerbeeinheiten / 10 : null;
-          
-          // Stellplätze: Werte sind * 10
-          const stellplaetze = zusatz.stellplaetze != null ? zusatz.stellplaetze / 10 : null;
-          
-          // Baujahr: Werte sind * 10 (z.B. 18980 = 1898)
-          const baujahr = zusatz.baujahr != null ? Math.round(zusatz.baujahr / 10) : null;
-          
-          console.log('[OVM] Merge für', obj.name, '→ Fläche:', flaeche, 'WE:', we, 'GE:', ge, 'Stellplätze:', stellplaetze);
+          console.log('[OVM] Merge für', obj.name, '→', JSON.stringify({
+            flaeche: zusatz.vermietbare_flaeche_qm,
+            we: zusatz.wohneinheiten,
+            ge: zusatz.gewerbeeinheiten,
+            stellplaetze: zusatz.stellplaetze,
+            grundmiete: zusatz.grundmiete,
+            durchschnitt_miete_qm: zusatz.durchschnitt_miete_qm
+          }));
           
           return {
             ...baseObject,
-            vermietbare_flaeche_qm: flaeche,
-            wohneinheiten: we,
-            gewerbeeinheiten: ge,
-            stellplaetze: stellplaetze,
+            vermietbare_flaeche_qm: zusatz.vermietbare_flaeche_qm,
+            wohneinheiten: zusatz.wohneinheiten,
+            gewerbeeinheiten: zusatz.gewerbeeinheiten,
+            stellplaetze: zusatz.stellplaetze,
             grundmiete: formatCurrency(zusatz.grundmiete),
             durchschnitt_miete_qm: formatRentPerSqm(zusatz.durchschnitt_miete_qm),
             energieklasse: zusatz.energieklasse || null,
             energietraeger: zusatz.energietraeger || null,
-            baujahr: baujahr,
+            baujahr: zusatz.baujahr,
             denkmalschutz: zusatz.denkmalschutz || null
           };
         }
