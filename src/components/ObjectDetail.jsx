@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import OvmChecklist from './OvmChecklist';
+import PhotoGallery from './PhotoGallery';
 
 const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
   const { id } = useParams();
@@ -239,6 +240,36 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
               Für dieses Objekt sind keine Detailinformationen verfügbar
             </div>
           )}
+        </div>
+
+        {/* Fotogalerie */}
+        <PhotoGallery objectId={object.id} />
+
+        {/* Kommentarfeld */}
+        <div style={{ marginBottom: '2rem' }}>
+          <h3 style={{ marginBottom: '1rem', color: '#2c3e50' }}>Allgemeine Kommentare</h3>
+          <textarea
+            value={ovmData[object.id]?.kommentar || ''}
+            onChange={(e) => {
+              const newData = {
+                ...ovmData[object.id],
+                kommentar: e.target.value
+              };
+              onUpdateOvm(object.id, newData);
+            }}
+            placeholder="Hier können Sie allgemeine Kommentare zum Objekt erfassen..."
+            style={{
+              width: '100%',
+              minHeight: '120px',
+              padding: '0.75rem',
+              fontSize: '1rem',
+              fontFamily: 'inherit',
+              border: '1px solid #bdc3c7',
+              borderRadius: '4px',
+              resize: 'vertical',
+              boxSizing: 'border-box'
+            }}
+          />
         </div>
 
         {/* OVM Checkliste */}

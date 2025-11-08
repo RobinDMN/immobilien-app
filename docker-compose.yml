@@ -35,6 +35,46 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  upload-server:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/immobilien-upload-server:latest
+    container_name: immobilien-upload-server
+    restart: unless-stopped
+    
+    ports:
+      - "127.0.0.1:3001:3001"
+    
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    
+    volumes:
+      - upload-data:/app/uploads
+    
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "app=immobilien-upload"
+      - "environment=production"
+    
+    networks:
+      - immobilien-network
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  upload-data:
+    driver: local
+
 networks:
   immobilien-network:
     driver: bridge
