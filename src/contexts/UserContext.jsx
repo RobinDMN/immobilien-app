@@ -1,5 +1,5 @@
 /**
- * @fileoverview User Context - Name-basiertes Login und User-State-Management
+ * @fileoverview User Context - Profil-basiertes Login und User-State-Management
  */
 
 // @ts-check
@@ -9,41 +9,30 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const USER_STORAGE_KEY = 'immobilien-app:currentUser';
 
 /**
- * Konvertiert Namen zu URL-tauglichem Slug
- * @param {string} name
- * @returns {string}
+ * Feste Profile
+ * @typedef {Object} UserProfile
+ * @property {string} name - Display-Name
+ * @property {string} slug - URL-tauglicher Slug für Storage
  */
-export function slugifyUsername(name) {
-  return name
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-}
+
+/** @type {UserProfile[]} */
+export const USER_PROFILES = [
+  { name: 'Robin', slug: 'robin' },
+  { name: 'Friedrich', slug: 'friedrich' },
+  { name: 'Freddy', slug: 'freddy' },
+  { name: 'Salih', slug: 'salih' },
+];
 
 /**
- * Validiert Benutzername
- * @param {string} name
- * @returns {{valid: boolean, error?: string}}
+ * Findet Profil anhand Name oder Slug
+ * @param {string} nameOrSlug
+ * @returns {UserProfile | undefined}
  */
-export function validateUsername(name) {
-  const trimmed = name.trim();
-  
-  if (!trimmed) {
-    return { valid: false, error: 'Bitte gib einen Namen ein.' };
-  }
-  
-  if (trimmed.length < 2) {
-    return { valid: false, error: 'Der Name muss mindestens 2 Zeichen lang sein.' };
-  }
-  
-  if (trimmed.length > 50) {
-    return { valid: false, error: 'Der Name darf maximal 50 Zeichen lang sein.' };
-  }
-  
-  return { valid: true };
+export function findProfile(nameOrSlug) {
+  const normalized = nameOrSlug.toLowerCase().trim();
+  return USER_PROFILES.find(
+    p => p.name.toLowerCase() === normalized || p.slug === normalized
+  );
 }
 
 /**
@@ -51,11 +40,12 @@ export function validateUsername(name) {
  * @property {string | null} currentUser - Display-Name des aktuellen Benutzers
  * @property {string | null} userSlug - URL-tauglicher Slug des Benutzers
  * @property {boolean} isAuthenticated - Ob ein Benutzer angemeldet ist
- * @property {(name: string) => void} login - Login-Funktion
+ * @property {(profileNameOrSlug: string) => void} login - Login-Funktion (mit festem Profil)
  * @property {() => void} logout - Logout-Funktion
  * @property {() => void} showLogin - Login-Modal anzeigen
  * @property {() => void} closeLogin - Login-Modal schließen
  * @property {boolean} showLoginModal - Ob Login-Modal angezeigt wird
+ * @property {string | null} lastUsedProfile - Slug des zuletzt verwendeten Profils
  */
 
 /** @type {React.Context<UserContextType>} */
@@ -70,6 +60,7 @@ export function UserProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(/** @type {string | null} */ (null));
   const [userSlug, setUserSlug] = useState(/** @type {string | null} */ (null));
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [lastUsedProfile, setLastUsedProfile] = useState(/** @type {string | null} */ (null));
 
   // Auto-Login beim Start
   useEffect(() => {
@@ -79,10 +70,20 @@ export function UserProvider({ children }) {
       const stored = localStorage.getItem(USER_STORAGE_KEY);
       if (stored) {
         const userData = JSON.parse(stored);
-        if (userData.name) {
-          setCurrentUser(userData.name);
-          setUserSlug(slugifyUsername(userData.name));
-          console.log('[UserContext] Auto-Login:', userData.name);
+        if (userData.slug) {
+          // Finde Profil anhand Slug
+          const profile = findProfile(userData.slug);
+          if (profile) {
+            setCurrentUser(profile.name);
+            setUserSlug(profile.slug);
+            console.log('[UserContext] Auto-Login:', profile.name);
+          } else {
+            // Ungültiges Profil → Login anzeigen
+            setShowLoginModal(true);
+          }
+        } else {
+          // Kein Slug → Login anzeigen
+          setShowLoginModal(true);
         }
       } else {
         // Kein User gespeichert → Login anzeigen
@@ -95,22 +96,19 @@ export function UserProvider({ children }) {
   }, []);
 
   /**
-   * Login-Funktion
-   * @param {string} name
+   * Login-Funktion (mit festem Profil)
+   * @param {string} profileNameOrSlug - Name oder Slug des Profils
    */
-  const login = (name) => {
-    const trimmed = name.trim();
-    const validation = validateUsername(trimmed);
+  const login = (profileNameOrSlug) => {
+    const profile = findProfile(profileNameOrSlug);
     
-    if (!validation.valid) {
-      throw new Error(validation.error);
+    if (!profile) {
+      throw new Error('Ungültiges Profil');
     }
-
-    const slug = slugifyUsername(trimmed);
     
     // Speichere in State
-    setCurrentUser(trimmed);
-    setUserSlug(slug);
+    setCurrentUser(profile.name);
+    setUserSlug(profile.slug);
     setShowLoginModal(false);
 
     // Persistiere im LocalStorage
@@ -118,12 +116,12 @@ export function UserProvider({ children }) {
       localStorage.setItem(
         USER_STORAGE_KEY,
         JSON.stringify({
-          name: trimmed,
-          slug,
+          name: profile.name,
+          slug: profile.slug,
           loginAt: new Date().toISOString(),
         })
       );
-      console.log('[UserContext] Login erfolgreich:', trimmed, '→', slug);
+      console.log('[UserContext] Login erfolgreich:', profile.name, '→', profile.slug);
     } catch (error) {
       console.error('[UserContext] Fehler beim Speichern:', error);
     }
@@ -171,6 +169,7 @@ export function UserProvider({ children }) {
     showLogin,
     closeLogin,
     showLoginModal,
+    lastUsedProfile: userSlug, // Aktuelles Profil = zuletzt verwendet
   };
 
   return (

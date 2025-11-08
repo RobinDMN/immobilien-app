@@ -1,5 +1,5 @@
 /* ============================================================================
-   LOGIN MODAL STYLES
+   LOGIN MODAL STYLES - Profile Selection
    ============================================================================ */
 
 .login-modal-overlay {
@@ -27,7 +27,7 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  max-width: 450px;
+  max-width: 550px;
   width: 100%;
   animation: slideUp 0.3s ease-out;
 }
@@ -43,6 +43,9 @@
   }
 }
 
+/* ============================================================================
+   HEADER
+   ============================================================================ */
 .login-modal-header {
   padding: 24px 24px 16px;
   border-bottom: 1px solid #e1e4e8;
@@ -79,88 +82,140 @@
   color: #2c3e50;
 }
 
-.login-modal-form {
+/* ============================================================================
+   PROFILES
+   ============================================================================ */
+.login-modal-profiles {
   padding: 24px;
 }
 
-.login-modal-field {
-  margin-bottom: 20px;
-}
-
-.login-modal-label {
-  display: block;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #34495e;
-  margin-bottom: 8px;
-}
-
-.login-modal-input {
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 1rem;
-  border: 2px solid #ddd;
+.login-modal-current-info {
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 12px;
+  background-color: #e8f4f8;
   border-radius: 8px;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
-}
-
-.login-modal-input:focus {
-  outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-}
-
-.login-modal-input--error {
-  border-color: #e74c3c;
-}
-
-.login-modal-input--error:focus {
-  border-color: #e74c3c;
-  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
-}
-
-.login-modal-input:disabled {
-  background: #f5f5f5;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.login-modal-error {
-  margin-top: 8px;
-  padding: 8px 12px;
-  background: #ffe6e6;
-  border-left: 3px solid #e74c3c;
-  color: #c0392b;
-  font-size: 0.9rem;
-  border-radius: 4px;
-}
-
-.login-modal-hint {
-  margin-top: 8px;
-  font-size: 0.85rem;
-  color: #7f8c8d;
-  line-height: 1.4;
-}
-
-.login-modal-current {
-  padding: 12px 16px;
-  background: #e3f2fd;
-  border-left: 3px solid #3498db;
-  border-radius: 4px;
-  font-size: 0.9rem;
   color: #2c3e50;
-  margin-bottom: 20px;
+  font-size: 0.9rem;
 }
 
-.login-modal-current strong {
+.login-modal-current-info strong {
   color: #3498db;
 }
 
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 16px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.profile-card:hover {
+  border-color: #3498db;
+  background-color: #f8fbfd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+}
+
+.profile-card:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.profile-card:active {
+  transform: translateY(0);
+}
+
+.profile-card--last-used {
+  border-color: #f39c12;
+  background-color: #fffbf5;
+}
+
+.profile-card--current {
+  border-color: #27ae60;
+  background-color: #f0f9f4;
+  cursor: default;
+}
+
+.profile-card--current:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.profile-card:nth-child(2) .profile-avatar {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.profile-card:nth-child(3) .profile-avatar {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.profile-card:nth-child(4) .profile-avatar {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.profile-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.profile-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  background-color: #f39c12;
+  color: white;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.profile-badge--current {
+  background-color: #27ae60;
+}
+
+/* ============================================================================
+   ACTIONS
+   ============================================================================ */
 .login-modal-actions {
   display: flex;
   gap: 12px;
-  justify-content: flex-end;
+  justify-content: center;
+  padding-top: 16px;
+  border-top: 1px solid #e1e4e8;
 }
 
 .login-modal-button {
@@ -178,16 +233,6 @@
   cursor: not-allowed;
 }
 
-.login-modal-button--primary {
-  background: #3498db;
-  color: white;
-}
-
-.login-modal-button--primary:hover:not(:disabled) {
-  background: #2980b9;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-}
-
 .login-modal-button--secondary {
   background: #ecf0f1;
   color: #34495e;
@@ -197,29 +242,36 @@
   background: #d5dbdb;
 }
 
-/* Responsive */
-@media (max-width: 500px) {
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+@media (max-width: 600px) {
   .login-modal {
+    max-width: 100%;
     margin: 20px;
   }
 
-  .login-modal-header {
-    padding: 20px 20px 12px;
+  .profile-grid {
+    grid-template-columns: 1fr;
   }
 
   .login-modal-header h2 {
     font-size: 1.25rem;
   }
+}
 
-  .login-modal-form {
-    padding: 20px;
+@media (max-width: 400px) {
+  .login-modal-profiles {
+    padding: 16px;
   }
 
-  .login-modal-actions {
-    flex-direction: column-reverse;
+  .profile-card {
+    padding: 20px 12px;
   }
 
-  .login-modal-button {
-    width: 100%;
+  .profile-avatar {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
   }
 }
