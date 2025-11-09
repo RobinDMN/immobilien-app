@@ -61,7 +61,7 @@
     "durchschnittsmiete": "6,32 €",
     "zielmiete": "7,85 €",
     "baujahr": "1902",
-  "denkmalschutz": "Nein", // trigger redeploy
+  "denkmalschutz": "Nein",
     "modernisierung": "1995",
     "waermeerzeuger": null,
     "energietraeger": "Erdgas",
