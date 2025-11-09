@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import OvmChecklist from './OvmChecklist';
-import PhotoGallery from './PhotoGallery';
+// import PhotoGallery from './PhotoGallery'; // Fotogalerie vorübergehend entfernt
 
 const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
   const { id } = useParams();
@@ -248,8 +248,8 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
           )}
         </div>
 
-        {/* Fotogalerie */}
-        <PhotoGallery objectId={object.id} />
+        {/* Fotogalerie - vorübergehend entfernt */}
+        {/* <PhotoGallery objectId={object.id} /> */}
 
         {/* Kommentarfeld */}
         <div style={{ marginBottom: '2rem' }}>
