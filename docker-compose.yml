@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   immobilien-app:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/immobilien-app:latest
+    image: ghcr.io/robindmn/immobilien-app:latest
     container_name: immobilien-app
     restart: unless-stopped
     
@@ -36,7 +34,7 @@ services:
         max-file: "3"
 
   upload-server:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/immobilien-upload-server:latest
+    image: ghcr.io/robindmn/immobilien-upload-server:latest
     container_name: immobilien-upload-server
     restart: unless-stopped
     
