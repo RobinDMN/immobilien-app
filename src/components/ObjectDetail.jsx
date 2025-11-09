@@ -174,16 +174,26 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
             </div>
           )}
           
-          {/* 8. baujahr - immer anzeigen */}
+          {/* 8. baujahr - immer anzeigen, egal ob null, unbekannt oder Zahl */}
           <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
             <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Baujahr:</span>
-            <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.baujahr_int ?? object.baujahr ?? 'unbekannt'}</span>
+            <span className="info-value" style={{ marginLeft: '0.5rem' }}>{
+              object.baujahr_int !== undefined && object.baujahr_int !== null
+                ? object.baujahr_int
+                : (object.baujahr !== undefined && object.baujahr !== null && String(object.baujahr).trim() !== ''
+                    ? object.baujahr
+                    : 'unbekannt')
+            }</span>
           </div>
 
-          {/* 9. denkmalschutz - immer anzeigen */}
+          {/* 9. denkmalschutz - immer anzeigen, egal ob Nein, Ja, null oder unbekannt */}
           <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
             <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Denkmalschutz:</span>
-            <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.denkmalschutz ?? 'unbekannt'}</span>
+            <span className="info-value" style={{ marginLeft: '0.5rem' }}>{
+              object.denkmalschutz !== undefined && object.denkmalschutz !== null && String(object.denkmalschutz).trim() !== ''
+                ? object.denkmalschutz
+                : 'unbekannt'
+            }</span>
           </div>
           
           {/* 10. energieeffizienz */}
