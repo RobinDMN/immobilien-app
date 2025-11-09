@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// API-URL dynamisch bestimmen: Umgebungsvariable, sonst relativer Pfad (Proxy), sonst Fallback
+let API_URL = '';
+if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) {
+  API_URL = import.meta.env.VITE_API_URL;
+} else if (window.location && window.location.origin) {
+  // Relativer Pfad für Proxy-Setup (z.B. Vite-Proxy oder Nginx)
+  API_URL = '';
+} else {
+  API_URL = 'http://localhost:3001';
+}
 
 const PhotoGallery = ({ objectId }) => {
   const [images, setImages] = useState([]);
@@ -16,10 +25,14 @@ const PhotoGallery = ({ objectId }) => {
   const loadImages = async () => {
     try {
       const response = await fetch(`${API_URL}/api/objects/${objectId}/images`);
+      if (!response.ok) {
+        throw new Error(`Image-API nicht erreichbar (${response.status}): ${API_URL}/api/objects/${objectId}/images`);
+      }
       const data = await response.json();
       setImages(data.images || []);
     } catch (err) {
       console.error('Failed to load images:', err);
+      setError(`Fehler beim Laden der Bilder: ${err.message}`);
     }
   };
 
@@ -51,16 +64,15 @@ const PhotoGallery = ({ objectId }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Upload failed');
+        throw new Error(`Upload fehlgeschlagen (${response.status}): ${API_URL}/api/objects/${objectId}/images`);
       }
 
       const data = await response.json();
-      
       // Reload images
       await loadImages();
     } catch (err) {
       console.error('Upload error:', err);
-      setError('Fehler beim Hochladen des Bildes');
+      setError(`Fehler beim Hochladen des Bildes: ${err.message}`);
     } finally {
       setUploading(false);
       // Reset file input

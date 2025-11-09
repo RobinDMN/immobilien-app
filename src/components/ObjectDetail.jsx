@@ -174,21 +174,17 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
             </div>
           )}
           
-          {/* 8. baujahr - Integer (vierstellig) */}
-          {object.baujahr_int != null && (
-            <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
-              <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Baujahr:</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.baujahr_int}</span>
-            </div>
-          )}
-          
-          {/* 9. denkmalschutz */}
-          {object.denkmalschutz != null && object.denkmalschutz !== '' && (
-            <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
-              <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Denkmalschutz:</span>
-              <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.denkmalschutz}</span>
-            </div>
-          )}
+          {/* 8. baujahr - immer anzeigen */}
+          <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
+            <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Baujahr:</span>
+            <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.baujahr_int ?? object.baujahr ?? 'unbekannt'}</span>
+          </div>
+
+          {/* 9. denkmalschutz - immer anzeigen */}
+          <div className="info-row" style={{ padding: '0.75rem 0', borderBottom: '1px solid #ecf0f1' }}>
+            <span className="info-label" style={{ fontWeight: '600', color: '#34495e' }}>Denkmalschutz:</span>
+            <span className="info-value" style={{ marginLeft: '0.5rem' }}>{object.denkmalschutz ?? 'unbekannt'}</span>
+          </div>
           
           {/* 10. energieeffizienz */}
           {object.energieeffizienz != null && object.energieeffizienz !== '' && (
