@@ -248,8 +248,7 @@ const ObjectDetail = ({ objekte, onUpdateOvm, ovmData }) => {
           )}
         </div>
 
-        {/* Fotogalerie - vorübergehend entfernt */}
-        {/* <PhotoGallery objectId={object.id} /> */}
+
 
         {/* Kommentarfeld */}
         <div style={{ marginBottom: '2rem' }}>
